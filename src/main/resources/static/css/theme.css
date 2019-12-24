@@ -1,0 +1,136 @@
+html { font-family: Barlow; font-size:18px;}
+.nav { background-color: #1c4418; } 
+.nav-header { color:#fff; }
+.nav-toggle, .nav-dropdown { background-color:#1c4418;; color:#fff; margin:0px; padding: 0px; width:50px;}
+.nav-dropdown a { color:#fff; text-decoration: none;}
+.nav-dropdown a:hover {color:#ccc;}
+.menu-vertical a { color: #000; text-decoration: none; display: block; width:100%; padding:1em; }
+.menu-vertical a:hover { color: #1c6b22; }
+input, select, option { font-family: Barlow; font-size:18px;}
+.button { background-color:#2b6925; color:#fff; padding:.5em;width:100%;border:1px solid #2b6925;font-size:16px;}
+a { color: #245d1f;}
+a:hover { color: #399231;}
+.default { background-color:#ccc; }
+* { box-sizing: border-box; margin:0px; }
+[class*="col-"] { float: left; padding: 15px;}
+.col-1 { width: 8.33%; }
+.col-2 { width: 16.66%; }
+.col-3 { width: 25%; }
+.col-4 { width: 33.33%; }
+.col-5 { width: 41.66%; }
+.col-6 { width: 50%; }
+.col-7 { width: 58.33%; }
+.col-8 { width: 66.66%; }
+.col-9 { width: 75%; }
+.col-10 { width: 83.33%; }
+.col-11 { width: 91.66%; }
+.col-12 { width: 100%; }
+@media only screen and (max-width: 768px) { [class*="col-"] { width: 100%;} }
+@media only screen and (max-width: 768px) { [class*="menu-mobile"] { display: none; } }
+.row::after { content: ""; clear: both; display: block; }
+.center { margin:auto; float:none; }
+.nav { height:50px; }
+.nav-toggle { margin-top:-25px; margin-right:10px; float:right; outline:none; border:none; font-size:20px; }
+.nav-dropdown { padding:0em; text-align: center; right:0px;position:absolute;height:50%; margin-top:px;}
+.nav-dropdown a { display: block; width:100%; padding: 1em;}
+.menu-mobile { padding:1em; text-align: center; }
+.menu-mobile a { display: block; width:100%; padding:1em; }
+.shadow { box-shadow: 0 2px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,0.19); overflow: auto;}
+
+h3 { font-size:18px; }
+.field { width: 100%; height:45px; border-radius: 5px; border:1px solid #ccc;padding:.5em;}
+.button:hover {cursor: pointer; }
+a {text-decoration: none;}
+.modal{z-index:3;display:none;padding-top:100px;position:fixed;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4)}
+.modal-content{margin:auto;background-color:#fff;position:relative;padding:0;outline:0;width:600px}
+@media (max-width:600px){.modal-content{margin:0 10px;width:auto!important}.modal{padding-top:30px}
+@media (max-width:768px){.modal-content{width:500px}.modal{padding-top:50px}}
+@media (min-width:993px){.modal-content{width:900px}}}
+.animate-top{position:relative;animation:animatetop 0.4s}@keyframes animatetop{from{top:-300px;opacity:0} to{top:0;opacity:1}}
+
+    .currency {
+        position: relative;
+        display: block;
+    }
+
+  .currency:after {
+    color: #37424a !important;
+    content: "$";
+    font-size: 18px !important;
+    font-weight: 400;
+    position: absolute;
+    
+    display: block;
+    height: 100%;
+    top: 0;
+    left: 5px;
+    line-height: 45px;
+    }
+
+table {
+    font-size:16px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 6px;
+}
+
+.projectedSpendingLabel {
+    margin-top:15px;
+    padding:0px;
+    margin-bottom:35px;
+}
+
+.projectedSpendingProgress {
+    font-size:30px;
+    float:left;
+    height:40px;
+    padding:0px;
+    border:1px solid #ccc;
+    text-align: right;
+    border-top-left-radius: 50px 100px;
+    border-bottom-left-radius: 50px 100px;
+    border-top-right-radius: 50px 100px;
+    border-bottom-right-radius: 50px 100px;
+    animation-name: fill;
+    animation-duration: 1s;
+}
+
+@keyframes fill {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
+.money {
+    font-family: 'Heebo', sans-serif;
+    font-weight: 500;
+}
+
+.widget {
+    font-size:20px;
+    font-family: 'Heebo', sans-serif;
+    background-color:#578a53;
+    color: #fff;
+}
+
+.widget h2 {
+    font-weight: 100;
+    font-size: 30px;
+    font-family: heebo;
+}
+
+h2 {
+    font-size: 30px;
+    font-family: heebo;
+    font-weight: 300;
+}

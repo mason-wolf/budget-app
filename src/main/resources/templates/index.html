@@ -1,0 +1,26 @@
+
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Login</title>
+  </head>
+  <body>
+
+<div class="col-12">
+  <div class="col-5 center">
+    <form method="post" th:action="@{/login}">
+	<div th:if="${param.error}">
+		Invalid username or password.
+	</div>
+    <div class="col-12" style="text-align:center;"><h3>Sign in to Project Budget</h3></div>
+    <div class="col-12" style="padding-bottom:0;">Email:</div>
+    <div class="col-12"><input type="text" class="field" name="username" required ></div>
+    <div class="col-12" style="padding-bottom:0;" >Password:</div>
+    <div class="col-12"><input type="password"  class="field" name="password" required ></div>
+
+        <div class="col-12"><a href="CreateAccount">Create Account</a></div>
+    <div class="col-4 center" style="float:right;"><input type="submit" class="button" value="Sign in"></div>
+    
+  </form>
+  </div>
+</div>

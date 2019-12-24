@@ -1,0 +1,68 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Add Expense</title>
+  </head>
+  <body>
+  
+  
+  <div class="col-12" style="padding:0px">
+    <div class="col-7 center shadow"  style="padding:1em;">
+                <div class="col-12"><a href="Dashboard.php">Dashboard</a> <span style="margin-left:15px;margin-right:15px;">></span> <a href="AddExpense.php">Add Expense</a></div>
+                <div class="col-12"><h2>Add Expense</h2></div>
+                <div class="col-6" style="white-space:nowrap;">Current Balance:</div>
+                <div class="col-6">
+                    <p th:text="${balance}"></p>
+                </div>
+                    <form method="post" action="AddExpense.php">
+                        <input type="hidden" name="addexpense">
+                        <div class="col-6">Amount:</div>
+                        <div class="col-6">    
+                            <span class="currency">
+                                <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount">
+                                <?php if (isset($emptyFieldError)) { echo $emptyFieldError; } ?>
+                            </span>
+                        </div>
+                        <div class="col-6">Category:</br><a href="#" onclick="document.getElementById('categoryManager').style.display='block'" style="font-size:13px;">Manage Categories</a></div>
+                        <div class="col-6"> 
+                            <select th:field="${categories}" class="field">
+                            	<option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.title}"></option>
+                            </select>
+                        </div>
+                        <div class="col-6" style="margin-top:15px;">Date:</div>
+                        <div class="col-6"><input type="date" class="field" name="date" id="date" value="<?php echo $today; ?>"></div>
+                        <div class="col-3" style="float:right;"><input type="submit" value="Add" class="button"></div>
+                     </form>
+        </div>
+</div>
+
+
+<div id="categoryManager" class="modal">
+    <div class="modal-content  animate-top">
+        <div class="col-12" style="background-color:#fff;padding: 30px;">
+           <span onclick="document.getElementById('categoryManager').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
+           <h2>Manage Categories</h2>
+           <div class="col-4" style="margin-top:15px;font-weight:100;">Category Title:</div>
+
+            <form method="post" th:action="@{/AddBudgetCategory}">
+                <div class="col-12" style="margin-top:10px;"><input type="text" class="field" name="category"></div>
+                <div class="col-4" style="float:right;"><input type="submit" class="button" value="Add"></div>
+            </form>
+         
+                <div class="col-12">
+                <form method = "post" th:action="@{/DeleteBudgetCategory}">
+
+                        <select class="field" name="category">
+						    <option th:each="category : ${categories}"
+						            th:value="${category.getCategoryId()}"
+						            th:text="${category.getTitle()}">
+						    </option>
+						</select>
+
+                <div class="col-4" style="float:right;"><input type="submit" class="button" value="Delete" ></div>
+                </form>
+                 </div>
+        </div>
+    </div>
+</div>
+        

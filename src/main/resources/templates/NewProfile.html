@@ -1,0 +1,32 @@
+ <html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Add Income</title>
+  </head>
+  <body>
+ 
+ <div class="col-12">
+   <div class="col-6 shadow center" style="background-color:#fff;">
+
+        <form method="post" th:action="@{/NewProfile}">
+     <input type="hidden" name="newprofile">
+     <div class="col-12"><h2>Welcome <?php echo $username; ?></h2></br></br>Let's add some account information.</br></div>
+       <div class="col-12">Account Nickname:</div>
+       <div class="col-12" ><input type="text" class="field" name="accountName" ></div>
+       <div class="col-12">Account Type:</div>
+       <div class="col-12">
+        <select class="field" name="accountType" >
+         <option value="checking">Checking</option>
+         <option value="savings">Savings</option>
+         <option value="Other">Other</option>
+       </select>
+     </div>
+       <div class="col-12">Income:</div>
+       <div class="col-12"><span class="currency"><input  type="text" class="field" name="income" placeholder="0.00" style="padding-left:17px;"></span></div>
+       <div class="col-12">Date Recieved:</div>
+       <div class="col-12"><input type="date" class="field" name="dateRecieved" value="<?php echo $today; ?>"></div>
+     <div class="col-3" style="float:right;"><input type="submit" class="button" value="Next"></div>
+   </form>
+
+   </div>
+ </div>

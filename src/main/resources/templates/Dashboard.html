@@ -1,0 +1,102 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Dashboard</title>
+  </head>
+  <body>
+
+<div class="col-12" style="padding:0px;">
+  <div class="col-7 center shadow" style="padding:1em;">
+ 
+  
+  <h2 style="margin-bottom:25px;margin-top:25px;">Dashboard <i class="fas fa-chart-bar" style="color:#1c4418;margin-left:10px;"></i></h2>
+  
+  <!--  Remaining Funds -->
+  <div class="col-4" style="padding:1px;text-align:center;">
+    <div class="col-12 widget">
+        <h2>Remaining Funds</h2>
+        <div class="money" style="margin-top:25px;"><h1><p th:text="${balance}"></p></h1></div>
+        <div class="col-12" style="text-align:right; padding:0px;"><a href='#' onclick="document.getElementById('AddIncome').style.display='block'" style="color:#fff;font-size:16px;">Add Income</a>
+        </div>
+    </div>
+</div>
+
+<!--  Add Income modal -->
+<div id="AddIncome" class="modal">
+    <div class="modal-content animate-top">
+        <div class="col-12" style="background-color:#fff;padding:30px;">
+
+            <span onclick="document.getElementById('AddIncome').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
+
+<div class="col-12"><h2>Add Income</h2></div>
+            <form method="post" th:action="@{/AddIncome}">
+                <div class="col-4" style="margin-top:5px;">Amount:</div>
+                <div class="col-6">    
+                    <span class="currency">
+                        <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount"></span>
+                </div>
+                <div class="col-4">Date:</div>
+                <div class="col-6"><input type="date" class="field" name="date" id="date" required  value="<?php echo $today; ?>"></div></br></br>
+                <div class="col-4" style="float:right;"><input type="submit" value="Add" class="button"></div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!--  Projected Savings -->
+<div class="col-4" style="padding:1px;text-align:center;">
+    <div class="col-12 widget">
+        <h2>Projected Savings</h2>
+
+        <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSavings}"></p></h1></div>
+        <div class='col-12' style='text-align:right;padding:0px;'><a href='ViewRecentSpending.php' style='color:#fff;font-size:16px;'>View Expenses</a></div>
+
+    </div>
+</div>
+
+ <!--  Total Budget -->
+<div class="col-4" style="padding:1px;text-align:center;">
+    <div class="col-12 widget">
+        <h2>Total Budget</h2>
+            <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSpending}"></p></h1></div>
+            <div class='col-12' style='text-align:right;padding:0px;'><a href='BudgetManager.php' style='color:#fff;font-size:16px;'>Manage Budget</a></div>
+
+    </div>
+</div>
+
+<!--  Recent Spending -->
+
+    <div th:if="${noAccountActivity}"><div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No account activity.</div></div>
+	<div th:if="${recentSpending}">
+
+	  <div class="col-12" style="padding:0px;margin-top:50px;">
+	  
+	      <h2 style="margin-bottom:15px;">Recent Spending <i class="fas fa-money-bill-alt" style="color:#1c4418;margin-left:10px;"></i></h2>
+	        <table>
+	          <tr>
+	            <th>Category</th>
+	            <th>Expense</th>
+	            <!-- 
+	            <td th:switch="${#lists.size(teacher.courses)}">
+    <span th:case="'0'">NO COURSES YET!</span>
+    <span th:case="'1'" th:text="${teacher.courses[0]}"></span>
+    <div th:case="*">
+        <div th:each="course:${teacher.courses}" th:text="${course}"/>
+    </div>
+</td> -->
+	          </tr>
+	        </table>
+	        <a href="ViewRecentSpending.php" style="float:right;margin-bottom:25px;">View All</a>
+	   </div>
+ 
+	</div>
+
+    <div class="col-4" style="float:right;padding:0px;margin-top:25px;">   
+          <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">
+        </div>
+
+
+</div>
+</div>
