@@ -41,20 +41,26 @@ public class IndexController {
 	public String createAccount(Model model, @RequestParam("username") String username, @RequestParam("password") String password) throws Exception {
 		
 		User user = new User(username, password);
+
 		User newUser = UserJdbc.query.getUser(user.getUserName());
-		
+
 		if (!validEmail(user.getUserName()))
 		{
 			model.addAttribute("invalidEmail", "Please enter a valid email.");
+			return "CreateAccount";
 		}
-
+		
 		if (newUser == null)
 		{
 		    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		    String encodedPassword = encoder.encode(password);
-			user.setPassword(encodedPassword);
-	
+			user.setPassword(encodedPassword);	
 			UserJdbc.query.create(user.getUserName(), user.getPassword());
+		}
+		else
+		{
+			model.addAttribute("accountError", "Account already exists.");
+			return "CreateAccount";
 		}
 
 		return "Dashboard";

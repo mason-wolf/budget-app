@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.model.Account;
 import com.projectbudget.budgetapp.model.Category;
+import com.projectbudget.budgetapp.model.Transaction;
 
 @Controller
 public class TransactionController {
@@ -34,7 +35,39 @@ public class TransactionController {
 		return "AddExpense";
 	}
 	
-	@RequestMapping(value = "/AddBudgetCategory", method = RequestMethod.POST)
+	@RequestMapping(value = "/AddExpense", method = RequestMethod.POST)
+	public String addExpense(@RequestParam("amount") String amount, Model model, @Valid String category, @RequestParam("date") String date)
+	{
+		double expense = 0;
+		
+		try 
+		{
+			expense = Double.parseDouble(amount);
+		}
+		catch (Exception e)
+		{
+			model.addAttribute("invalidAmount", "Please enter a valid amount.");
+			showAccountDetails(model);
+		}
+		
+		
+		String categoryTitle = AccountJdbc.query.getTransactionCategory(Integer.parseInt(category));
+		
+		Transaction transaction = new Transaction();
+		
+		transaction.setOwner(currentUser());
+		transaction.setAccount(AccountJdbc.query.getAccount(currentUser()).getAccountName());
+		transaction.setCategory(categoryTitle);
+		transaction.setDate(date);
+		transaction.setExpense(expense);
+		transaction.setIncome(AccountJdbc.query.getAccount(currentUser()).getBalance());
+		
+		AccountJdbc.query.addTransaction(transaction);
+		
+		return "redirect:/Dashboard";
+	}
+	
+	@RequestMapping(value = "AddExpense/AddCategory", method = RequestMethod.POST)
 	public String addBudgetCategory(Model model, @RequestParam("category") String categoryTitle) throws Exception {
 
 		AccountJdbc.query.addTransactionCategory(currentUser(), categoryTitle);
@@ -42,7 +75,7 @@ public class TransactionController {
 		return "AddExpense";
 	}
 	
-	@RequestMapping(value = "/DeleteBudgetCategory", method = RequestMethod.POST)
+	@RequestMapping(value = "AddExpense/DeleteCategory", method = RequestMethod.POST)
 	public String deleteBudgetCategory(@Valid String category, Model model) throws Exception {
 
 		AccountJdbc.query.deleteTransactionCategory(Integer.parseInt(category));
@@ -54,7 +87,7 @@ public class TransactionController {
 	public void showAccountDetails(Model model)
 	{
 		Account account = AccountJdbc.query.getAccount(currentUser());
-		List<Category> expenseCategories = AccountJdbc.query.getTransactionCategories(currentUser());
+		List<Category> expenseCategories = AccountJdbc.query.getBudgetCategories(currentUser());
 		model.addAttribute("balance", "$" + account.getBalance());	
 		model.addAttribute("categories", expenseCategories);
 	}

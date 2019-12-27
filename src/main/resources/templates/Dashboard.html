@@ -9,7 +9,7 @@
   <div class="col-7 center shadow" style="padding:1em;">
  
   
-  <h2 style="margin-bottom:25px;margin-top:25px;">Dashboard <i class="fas fa-chart-bar" style="color:#1c4418;margin-left:10px;"></i></h2>
+  <h2 style="margin-bottom:25px;margin-top:25px;">Dashboard </h2>
   
   <!--  Remaining Funds -->
   <div class="col-4" style="padding:1px;text-align:center;">
@@ -20,7 +20,7 @@
         </div>
     </div>
 </div>
-
+    
 <!--  Add Income modal -->
 <div id="AddIncome" class="modal">
     <div class="modal-content animate-top">
@@ -61,37 +61,85 @@
     <div class="col-12 widget">
         <h2>Total Budget</h2>
             <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSpending}"></p></h1></div>
-            <div class='col-12' style='text-align:right;padding:0px;'><a href='BudgetManager.php' style='color:#fff;font-size:16px;'>Manage Budget</a></div>
+            <div class='col-12' style='text-align:right;padding:0px;'><a href='/ManageBudget' style='color:#fff;font-size:16px;'>Manage Budget</a></div>
 
     </div>
 </div>
 
+<!-- Projected Spending -->
+
+   <div class = "col-12" style="padding:0px;margin-top:50px;" th:if="${noBudget}">
+	      <h2 style="margin-bottom:15px;">Projecting Spending</h2>
+   			<div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No projected expenses. </br><a href="/ManageBudget">Manage Budget</a></div>
+   	</div>
+   	
+   
+   	   <div class = "col-12" style="padding:0px;margin-top:50px;" th:if="${budgetStatus}">
+	      <h2 style="margin-bottom:15px;">Projecting Spending</h2>
+	        
+	        <table>
+	          <tr>
+	            <th>Category</th>
+	            <th>Budget</th>
+	            <th>Spent</th>
+	            <tr>
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.category}"/>
+				        </span>
+	            
+	            </td>
+	            
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.budgetAmount}"/>
+			        </span>           
+	            </td>
+	            
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.budgetSpent}"/>
+			            </span>           
+	            </td>
+	            
+	            
+	            </tr>
+	        </table>
+   	 </div>
+   	
+	
 <!--  Recent Spending -->
 
     <div th:if="${noAccountActivity}"><div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No account activity.</div></div>
-	<div th:if="${recentSpending}">
+	<div th:if="${transactionCategories}">
 
 	  <div class="col-12" style="padding:0px;margin-top:50px;">
 	  
-	      <h2 style="margin-bottom:15px;">Recent Spending <i class="fas fa-money-bill-alt" style="color:#1c4418;margin-left:10px;"></i></h2>
+	      <h2 style="margin-bottom:15px;">Recent Spending </h2>
 	        <table>
 	          <tr>
 	            <th>Category</th>
 	            <th>Expense</th>
-	            <!-- 
-	            <td th:switch="${#lists.size(teacher.courses)}">
-    <span th:case="'0'">NO COURSES YET!</span>
-    <span th:case="'1'" th:text="${teacher.courses[0]}"></span>
-    <div th:case="*">
-        <div th:each="course:${teacher.courses}" th:text="${course}"/>
-    </div>
-</td> -->
-	          </tr>
+	            <tr>
+	            <td th:switch="${#lists.size(transactionCategories)}">
+	            		<span th:case="*">
+				        	<p th:each="expense:${transactionCategories}" th:text="${expense.category}"/>
+				        </span>
+	            
+	            </td>
+	                     <td th:switch="${#lists.size(categorySpending)}">
+	            		<span th:case="*">
+				        	<p th:each="expense:${categorySpending}" th:text="${expense.expense}"/>
+				        </span>
+	            
+	            </td>
+	            </tr>
 	        </table>
 	        <a href="ViewRecentSpending.php" style="float:right;margin-bottom:25px;">View All</a>
 	   </div>
  
 	</div>
+
 
     <div class="col-4" style="float:right;padding:0px;margin-top:25px;">   
           <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">

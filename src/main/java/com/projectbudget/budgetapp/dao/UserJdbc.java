@@ -51,7 +51,7 @@ public class UserJdbc implements UserDao {
 	@Override
 	public User getUser(String username) {
 		
-		   String query = "select * from user where email = ?";
+		   String query = "select * from users where username = ?";
 		   User user = new User();
 
 		   try {
@@ -77,8 +77,7 @@ public class UserJdbc implements UserDao {
 		List<Account> accounts;
 		
 		try {
-			accounts = jdbcTemplateObject.query(query, new Object[] { username }, new AccountMapper());
-			
+			accounts = jdbcTemplateObject.query(query, new Object[] { username }, new AccountMapper());		
 		}
 		catch (Exception e)
 		{

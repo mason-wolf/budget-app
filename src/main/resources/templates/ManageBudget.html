@@ -1,0 +1,169 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Manage Budget</title>
+  </head>
+  <body>
+  
+
+<div class="col-12" style="padding:0px">
+    <div class="col-7 center shadow"  style="padding:0px;">
+        <div class="col-12" style="padding:1em;">
+            <div class="col-12"><a href="/Dashboard">Dashboard</a> <span style="margin-left:15px;margin-right:15px;">></span> <a href="/ManageBudget">Manage Budget</a></div>
+            <div class="col-12">
+                <h2>Manage Budget</h2></br>
+                <h3 style="float:right;">
+                    <p th:text="${budgetTimeframe}"></p>
+                </h3>
+                </br></br>
+                
+                <div th:if="${emptyBudget}">
+
+		                <table>
+		                    <tr>
+		                        <th style="border-bottom:0px;">Categories <?php include('categorymanager.php');?> </th>
+		                        <th style="border-bottom:0px;">Projected Expenses</th>
+		                    </tr> 
+		                </table>
+		                
+		            <div class="col-12" style="border:1px solid #ddd;text-align:center;">No projected expenses.</div>
+		            
+		            <table>
+		            	<td style='border-top:0px;'><b>Remaining Balance</b></td>
+		            	<td style='border-top:0px;'><b><p th:text="${accountBalance}"></b></td>
+		            </table>
+     
+                </div>
+
+				<div th:if="${budgetItems}">
+				
+					      <table>
+		                    <tr>
+		                        <th style="border-bottom:0px;">Categories <?php include('categorymanager.php');?> </th>
+		                        <th style="border-bottom:0px;">Projected Expenses</th>
+		                    </tr> 
+		                    					
+						    <tr th:each="item : ${budgetTotals}">
+							   <td><span th:text="${item.category}"></span></td>
+							   <td>$ <span th:text="${item.amount}"></span><a th:href="@{'/RemoveExpense/' + ${item.budgetId}}" style="float:right;">remove</a></td>
+							</tr>
+							
+
+
+						   
+							       <!--  
+						            <td th:switch="${#lists.size(budgetItems)}">
+						            		<span th:case="*">
+						            		<a th:href="@{'/list?l=' + ${lid}}" th:text="${lid}">element</a>
+									        	<p th:each="budgetItem:${budgetItems}" th:text="${budgetItem.category}" />
+									        </span>
+						            
+						            </td>
+						                     <td th:switch="${#lists.size(budgetTotals)}">
+						            		<span th:case="*">
+									        	<p th:each="budgetItem:${budgetTotals}" th:text="${budgetItem.amount}"/>
+									        </span>
+						            
+						            </td>
+-->
+						            </tr>
+				
+						<td style='border-top:0px;'><b>Remaining Balance</b></td>
+		            	<td style='border-top:0px;'><b><p th:text="${accountBalance}"></b></td>
+		            	
+		            	<tr>
+		                <td style='border-top:0px;'><b>Projected Savings</b></td>
+		            	<td style='border-top:0px;'><b><p th:text="${projectedSavings}"></b></td>
+		            	</tr>
+		            	
+		                <td style='border-top:0px;'><b>Total Budget</b></td>
+		            	<td style='border-top:0px;'><b><p th:text="${totalBudget}"></b></td>
+		            	
+		                </table>
+				</div>
+
+			    <!--        
+                    echo "<td style='border-top:0px;'><b>Remaining Balance</b></td>";
+                    echo "<td style='border-top:0px;' class='money'><b>$ " . $balance . "</b></td>";
+                    echo "<tr><td style='border-top:0px;'><b>Projected Savings</b></td>";
+                    echo "<td style='border-top:0px;' class='money'><b>$ " . number_format((float)$projectedSavings, 2, '.', '')  . "</b></td></tr>";
+                    echo "<td style='border-top:0px;'><b>Total Budgeted</b></td>";
+                    echo "<td style='border-top:0px;' class='money'><b>$ " . number_format((float)$projectedSpendingResult['total'], 2, '.', '') . "</b></td></tr>";
+                }
+                ?>  </table>
+-->
+           <div class="col-6" style="padding:5px;margin-top:50px;margin-bottom:15px;">
+            <h2>Add Projected Expense</h2>
+                <div class="col-4" style="margin-top:25px;margin-bottom:15px;padding:0px;">Amount:</div>
+                
+				<div th:if="${invalidAmount}"><div class='col-12'>Please enter expense amount.</div></div>
+				
+                 <form method="post" th:action="@{/ManageBudget}">
+
+                    <div class="col-12" style="padding:0px;"><span class="currency"><input  type="text" class="field"  placeholder="0.00"  style="padding-left:17px;" name="amount"></span></div>
+                    <div class="col-12" style="padding:0px;margin-top:25px;">
+                             <select class="field" name="category">
+						    <option th:each="category : ${categories}"
+						            th:value="${category.getCategoryId()}"
+						            th:text="${category.getTitle()}">
+						    </option>
+						</select>
+                    </div>
+                    <div class="col-12" style="padding:0px;">
+                    <sub><a href="#" onclick="document.getElementById('categoryManager').style.display='block'" style="float:right;margin-top:15px;">Manage Categories</a></sub>
+                    </div>
+                   
+                    <div class="col-5" style="float:right;padding:0px;margin-top:15px;"><input type="submit" class="button" value="Add" ></div>
+                </form>
+            </div>
+
+            <div class="col-6" style="padding:10px;margin-top:40px;margin-bottom:15px;">
+            <h2>Budget History</h2>
+            <!--  
+                <?php
+                    $budgetHistoryQuery = mysqli_query($connection, "select distinct startDate, endDate from budgets where owner='" . $user . "' and archived='true'");
+                    if(mysqli_num_rows($budgetHistoryQuery) == 0) {
+                        echo "<div style='border:1px solid #ddd;padding:1em;text-align:center;margin-top:25px;height:190px;'>Budget archive empty.</div>";
+                    }
+                    else {
+                        echo "<div class='col-12' style='border:1px solid #ddd;padding:1em;text-align:center;margin-top:50px;'>";
+                        while($budgetHistory = mysqli_fetch_assoc($budgetHistoryQuery)) {
+                            echo "<a href='#'>" . date("F Y", strtotime( $budgetHistory['startDate'])) . "</a></br>";
+                        }
+                        echo "</div>";
+                    }
+                ?>
+                -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="categoryManager" class="modal">
+    <div class="modal-content  animate-top">
+        <div class="col-12" style="background-color:#fff;padding: 30px;">
+           <span onclick="document.getElementById('categoryManager').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
+           <h2>Manage Categories</h2>
+           <div class="col-4" style="margin-top:15px;font-weight:100;">Category Title:</div>
+
+            <form method="post" th:action="@{/ManageBudget/AddCategory}">
+                <div class="col-12" style="margin-top:10px;"><input type="text" class="field" name="category"></div>
+                <div class="col-4" style="float:right;"><input type="submit" class="button" value="Add"></div>
+            </form>
+         
+                <div class="col-12">
+                <form method = "post" th:action="@{/ManageBudget/DeleteCategory}">
+
+                        <select class="field" name="category">
+						    <option th:each="category : ${categories}"
+						            th:value="${category.getCategoryId()}"
+						            th:text="${category.getTitle()}">
+						    </option>
+						</select>
+
+                <div class="col-4" style="float:right;"><input type="submit" class="button" value="Delete" ></div>
+                </form>
+                 </div>
+        </div>
+    </div>
+</div>

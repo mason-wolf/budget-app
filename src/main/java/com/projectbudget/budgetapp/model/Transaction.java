@@ -6,6 +6,7 @@ public class Transaction {
 	private String owner;
 	private Double income;
 	private String date;
+	private Boolean archived;
 	private Double expense;
 	private String category;
 	private String account;
@@ -40,6 +41,16 @@ public class Transaction {
 	
 	public void setDate(String date) {
 		this.date = date;
+	}
+	
+	public Boolean isArchived()
+	{
+		return this.archived;
+	}
+	
+	public void archive(Boolean status)
+	{
+		this.archived = status;
 	}
 	
 	public Double getExpense() {

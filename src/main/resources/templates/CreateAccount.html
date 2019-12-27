@@ -12,6 +12,7 @@
     <div class="col-12" style="padding-bottom:0;">Email:</div>
     <div class="col-12"><input type="text"  class="field" name="username" required ></div>
     <div th:if="${invalidEmail}" style="color:red;"><div class="col-12">Please enter a valid email.</div></div>
+    <div th:if="${accountError}" style="color:red;"><div class="col-12">Account already exists.</div></div>
     <div class="col-12" style="padding-bottom:0;">Password:</div>
     <div class="col-12"><input type="password"  class="field" name="password" required ></div>
     <div class="col-4"><a href="login">Login</a></div>

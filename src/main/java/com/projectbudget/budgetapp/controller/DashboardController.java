@@ -16,6 +16,7 @@ import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.dao.UserJdbc;
 import com.projectbudget.budgetapp.model.Account;
 import com.projectbudget.budgetapp.model.Budget;
+import com.projectbudget.budgetapp.model.BudgetStatus;
 import com.projectbudget.budgetapp.model.Transaction;
 
 
@@ -40,7 +41,12 @@ public class DashboardController {
 		account.setBudgetStartDate(dateRecieved);
 		account.isPrimary(true);
 	
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Auto & Transport");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Food & Dining");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Entertainment");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Personal Care");
 		AccountJdbc.query.addAccount(currentUser(), account);
+		populateDashboard(model);
 		return "Dashboard";
 	}
 	
@@ -74,11 +80,14 @@ public class DashboardController {
 		double totalBudget = 0;
 		
 		Account account = AccountJdbc.query.getAccount(currentUser());
-		List<Budget> budgetList = AccountJdbc.query.getBudget(currentUser());
+		
+		// Items in the budget
+		List<Budget> budgetList = AccountJdbc.query.getBudgetByCategory(currentUser());
 		
 		if (budgetList.size() == 0)
 		{
 			totalBudget = 0;
+			model.addAttribute("noBudget" , "No budget");
 		}
 		else
 		{
@@ -90,21 +99,25 @@ public class DashboardController {
 		
 		double projectedSavings = account.getBalance() - totalBudget;
 		
-		List<Transaction> recentSpending = AccountJdbc.query.getTransactions(currentUser());
-		
+		List<Transaction> transactionCategories = AccountJdbc.query.getTransactionsByCategory(currentUser());
+		List<Transaction> categorySpending = AccountJdbc.query.getTotalSpentByCategory(currentUser());
+		List<BudgetStatus> budgetStatusItems = AccountJdbc.query.getbudgetStatus(currentUser());
 		
  		model.addAttribute("balance", "$" + account.getBalance());
 		model.addAttribute("projectedSavings", "$" + projectedSavings);
 		model.addAttribute("projectedSpending", "$" + totalBudget);
 	
-		if (recentSpending.size() == 0)
+		if (transactionCategories.size() == 0)
 		{
 			model.addAttribute("noAccountActivity", "No account activity.");
 		}
 		else 
 		{
-			model.addAttribute("recentSpending", recentSpending);
+			model.addAttribute("transactionCategories", transactionCategories);
+			model.addAttribute("categorySpending", categorySpending);
+			model.addAttribute("budgetStatus", budgetStatusItems);
 		}
+		
     }
     
     public String currentUser()
