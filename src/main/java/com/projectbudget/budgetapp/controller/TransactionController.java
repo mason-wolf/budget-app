@@ -1,5 +1,6 @@
 package com.projectbudget.budgetapp.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,15 @@ public class TransactionController {
 	@RequestMapping(value = "/AddExpense", method = RequestMethod.POST)
 	public String addExpense(@RequestParam("amount") String amount, Model model, @Valid String category, @RequestParam("date") String date)
 	{
+		
+		if (date == "")
+		{
+			LocalDate currentDate = LocalDate.now();
+			int currentMonth = currentDate.getMonthValue();
+			int currentDay = currentDate.getDayOfMonth();
+			int currentYear = currentDate.getYear();
+			date = currentMonth + "/" + currentDay + "/" + currentYear;
+		}
 		double expense = 0;
 		
 		try 

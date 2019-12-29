@@ -1,6 +1,7 @@
 package com.projectbudget.budgetapp.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -113,6 +114,7 @@ public class DashboardController {
 		}
 		else 
 		{
+			
 			model.addAttribute("transactionCategories", transactionCategories);
 			model.addAttribute("categorySpending", categorySpending);
 			model.addAttribute("budgetStatus", budgetStatusItems);

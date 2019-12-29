@@ -18,6 +18,7 @@ public interface AccountDao {
 	public void deleteBudgetItem(int budgetId);
 	public List<Budget> getBudgetByCategory(String username);
 	public List<Budget> getTotalBudgeted(String username);
+	public List<Transaction> getTransactionHistory(String username);
 	public List<Transaction> getTransactionsByCategory(String username);
 	public List<Transaction> getTotalSpentByCategory(String username);
 	public List<Category> getBudgetCategories(String username);

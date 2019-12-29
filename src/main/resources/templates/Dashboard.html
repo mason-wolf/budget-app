@@ -66,16 +66,48 @@
     </div>
 </div>
 
+<!--  Recent Spending -->
+
+    <div th:if="${noAccountActivity}"><div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No account activity.</div></div>
+	<div th:if="${transactionCategories}">
+
+	  <div class="col-12" style="padding:0px;margin-top:50px;">
+	  
+	      <h2 style="margin-bottom:15px;">Recent Spending </h2>
+	        <table>
+	          <tr>
+	            <th>Category</th>
+	            <th>Expense</th>
+	            <tr>
+	            <td th:switch="${#lists.size(transactionCategories)}">
+	            		<span th:case="*">
+				        	<p th:each="transaction:${transactionCategories}" th:text="${transaction.category}"/>
+				        </span>      
+	            </td>
+	            
+	            <td th:switch="${#lists.size(categorySpending)}">
+	            		<span th:case="*">
+				        	<p th:each="transaction:${categorySpending}" th:text="${transaction.expense}"/>
+				        </span>      
+	            </td>
+	            	            
+	            </tr>
+	        </table>
+	        <a href="ViewRecentSpending.php" style="float:right;margin-bottom:25px;">View All</a>
+	   </div>
+ 
+	</div>
+	
 <!-- Projected Spending -->
 
-   <div class = "col-12" style="padding:0px;margin-top:50px;" th:if="${noBudget}">
-	      <h2 style="margin-bottom:15px;">Projecting Spending</h2>
+   <div class = "col-12"  th:if="${noBudget}">
+	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
    			<div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No projected expenses. </br><a href="/ManageBudget">Manage Budget</a></div>
    	</div>
    	
    
    	   <div class = "col-12" style="padding:0px;margin-top:50px;" th:if="${budgetStatus}">
-	      <h2 style="margin-bottom:15px;">Projecting Spending</h2>
+	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
 	        
 	        <table>
 	          <tr>
@@ -107,39 +139,6 @@
 	        </table>
    	 </div>
    	
-	
-<!--  Recent Spending -->
-
-    <div th:if="${noAccountActivity}"><div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No account activity.</div></div>
-	<div th:if="${transactionCategories}">
-
-	  <div class="col-12" style="padding:0px;margin-top:50px;">
-	  
-	      <h2 style="margin-bottom:15px;">Recent Spending </h2>
-	        <table>
-	          <tr>
-	            <th>Category</th>
-	            <th>Expense</th>
-	            <tr>
-	            <td th:switch="${#lists.size(transactionCategories)}">
-	            		<span th:case="*">
-				        	<p th:each="expense:${transactionCategories}" th:text="${expense.category}"/>
-				        </span>
-	            
-	            </td>
-	                     <td th:switch="${#lists.size(categorySpending)}">
-	            		<span th:case="*">
-				        	<p th:each="expense:${categorySpending}" th:text="${expense.expense}"/>
-				        </span>
-	            
-	            </td>
-	            </tr>
-	        </table>
-	        <a href="ViewRecentSpending.php" style="float:right;margin-bottom:25px;">View All</a>
-	   </div>
- 
-	</div>
-
 
     <div class="col-4" style="float:right;padding:0px;margin-top:25px;">   
           <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">

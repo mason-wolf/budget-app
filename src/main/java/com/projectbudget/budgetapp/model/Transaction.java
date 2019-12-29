@@ -11,6 +11,15 @@ public class Transaction {
 	private String category;
 	private String account;
 	
+	public Transaction()
+	{
+		
+	}
+	public Transaction(String category, double amount)
+	{
+		this.category = category;
+		this.expense = amount;
+	}
 	public int getTransactionId() {
 		return transactionId;
 	}

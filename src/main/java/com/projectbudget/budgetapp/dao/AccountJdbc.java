@@ -88,7 +88,7 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<Transaction> getTransactionsByCategory(String username) {
 		
-		String query = "select * from transactions where owner = ? and archived='false' group by category";
+		String query = "select * from transactions where owner = ? and archived='false' group by category order by category";
 		
 		List<Transaction> transactions;
 		
@@ -145,7 +145,7 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<Transaction> getTotalSpentByCategory(String username) {
 
-		String query = "select id, owner, income, archived, date, category, account, sum(expense) as expense from transactions where owner= ? and archived='0' group by category";
+		String query = "select id, owner, income, archived, date, category, account, sum(expense) as expense from transactions where owner= ? and archived='0' group by category order by category";
 		List<Transaction> transactions = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
 		return transactions;
 	}
@@ -202,6 +202,14 @@ public class AccountJdbc implements AccountDao{
 				"where budgets.owner= ? group by budgets.category;\r\n";
 		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username }, new BudgetStatusMapper());
 		return budgetStatus;
+	}
+
+	@Override
+	public List<Transaction> getTransactionHistory(String username) {
+		
+		String query = "select * from transactions where owner= ?";
+		List<Transaction> transactionList = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
+		return transactionList;
 	}
 
 
