@@ -63,7 +63,7 @@ public class IndexController {
 			return "CreateAccount";
 		}
 
-		return "Dashboard";
+		return "NewProfile";
 	}
 	
 	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = 

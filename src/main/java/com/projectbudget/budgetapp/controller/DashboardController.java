@@ -1,7 +1,15 @@
 package com.projectbudget.budgetapp.controller;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,8 +69,16 @@ public class DashboardController {
 		return "Dashboard";
 	}
 	
+	@RequestMapping(value = "RemoveTransaction/{transactionId}", method = RequestMethod.GET)
+	public String removeExpense(@PathVariable(value="transactionId") Integer transactionId, Model model) throws Exception {
+
+		AccountJdbc.query.deleteTransasction(transactionId);
+		populateDashboard(model);
+		return "redirect:/Dashboard";
+	}
+	
     @GetMapping({"/Dashboard"})
-    public String dashoard(Model model) {
+    public String dashoard(Model model) throws ParseException {
     	
     	List<Account> accounts = UserJdbc.query.getUserAccounts(currentUser());
     	
@@ -76,7 +93,7 @@ public class DashboardController {
     	}
     }
     
-    public void populateDashboard(Model model)
+    public void populateDashboard(Model model) throws ParseException
     {
 		double totalBudget = 0;
 		
@@ -84,6 +101,7 @@ public class DashboardController {
 		
 		// Items in the budget
 		List<Budget> budgetList = AccountJdbc.query.getBudgetByCategory(currentUser());
+		String budgetTimeFrame = budgetTimeframe(account);
 		
 		if (budgetList.size() == 0)
 		{
@@ -100,28 +118,46 @@ public class DashboardController {
 		
 		double projectedSavings = account.getBalance() - totalBudget;
 		
-		List<Transaction> transactionCategories = AccountJdbc.query.getTransactionsByCategory(currentUser());
-		List<Transaction> categorySpending = AccountJdbc.query.getTotalSpentByCategory(currentUser());
+		// Budget alloted and spent: compares budget items with transactions
 		List<BudgetStatus> budgetStatusItems = AccountJdbc.query.getbudgetStatus(currentUser());
+		List<Transaction> transactionHistory = AccountJdbc.query.getTransactionHistory(currentUser());
 		
  		model.addAttribute("balance", "$" + account.getBalance());
 		model.addAttribute("projectedSavings", "$" + projectedSavings);
 		model.addAttribute("projectedSpending", "$" + totalBudget);
-	
-		if (transactionCategories.size() == 0)
+		
+		if (transactionHistory.size() != 0)
+		{
+			model.addAttribute("transactionHistory", transactionHistory);
+		}
+
+		if (budgetList.size() == 0)
 		{
 			model.addAttribute("noAccountActivity", "No account activity.");
 		}
 		else 
 		{
-			
-			model.addAttribute("transactionCategories", transactionCategories);
-			model.addAttribute("categorySpending", categorySpending);
-			model.addAttribute("budgetStatus", budgetStatusItems);
+			model.addAttribute("budgetTimeFrame", budgetTimeFrame);
+		    model.addAttribute("budgetStatus", budgetStatusItems);
 		}
 		
     }
     
+	public String budgetTimeframe(Account account) throws ParseException
+	{
+		 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		 String budgetDate = account.getBudgetStartDate();
+		 Date date = new Date();
+		 date = dateFormat.parse(budgetDate);
+		 LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		String currentMonth = localDate.getMonth().toString();
+		String currentMonthLowerCase = currentMonth.toLowerCase();
+		String currentMonthFormatted = currentMonthLowerCase.substring(0, 1).toUpperCase() + currentMonthLowerCase.substring(1);
+		int currentYear = localDate.getYear();
+		return currentMonthFormatted + " " + currentYear + " Budget";
+	}
+	
     public String currentUser()
     {
     	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

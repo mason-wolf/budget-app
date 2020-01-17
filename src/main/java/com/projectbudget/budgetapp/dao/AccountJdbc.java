@@ -197,19 +197,37 @@ public class AccountJdbc implements AccountDao{
 
 	@Override
 	public List<BudgetStatus> getbudgetStatus(String username) {
-		String query = "select budgets.category, budgets.amount as budgetAmount, sum(transactions.expense) as budgetSpent from budgets \r\n" + 
-				"left join transactions on transactions.category = budgets.category\r\n" + 
-				"where budgets.owner= ? group by budgets.category;\r\n";
-		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username }, new BudgetStatusMapper());
+
+		String query = "select budgets.category, sum(transactions.expense) as budgetSpent, budgets.amount as budgetAmount from budgets left outer join transactions\r\n" + 
+				"on budgets.category = transactions.category where budgets.owner = ? group by budgets.category\r\n" + 
+				"UNION\r\n" + 
+				"select transactions.category, sum(transactions.expense) as budgetSpent, \r\n" + 
+				"budgets.amount as budgetAmount from transactions left outer join budgets on transactions.category = budgets.category \r\n" + 
+				"where transactions.owner = ?\r\n" + 
+				"group by transactions.category";
+		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username, username }, new BudgetStatusMapper());
 		return budgetStatus;
 	}
 
 	@Override
 	public List<Transaction> getTransactionHistory(String username) {
 		
-		String query = "select * from transactions where owner= ?";
+		String query = "select * from transactions where owner= ? order by id desc";
 		List<Transaction> transactionList = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
 		return transactionList;
+	}
+
+	@Override
+	public Transaction getTransaction(int transactionId) {
+		String query = "select * from transactions where id = ? LIMIT 60";
+		Transaction transaction = jdbcTemplateObject.queryForObject(query, new Object[] { transactionId }, new TransactionMapper());
+		return transaction;
+	}
+
+	@Override
+	public void deleteTransasction(int transactionId) {
+		String query = "delete from transactions where id = ?";
+		jdbcTemplateObject.update(query, transactionId);
 	}
 
 
