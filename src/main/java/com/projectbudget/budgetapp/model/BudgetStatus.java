@@ -5,12 +5,19 @@ public class BudgetStatus {
 	String category;
 	double budgetAmount;
 	double budgetSpent;
+	public double percentageSpent;
 	
 	public BudgetStatus ()
 	{
-		
-	}
 
+	}
+	
+	public double getPercentageSpent()
+	{
+		this.percentageSpent = (budgetSpent / budgetAmount) * 100;
+		return percentageSpent;
+	}
+	
 	public String getCategory() {
 		return category;
 	}

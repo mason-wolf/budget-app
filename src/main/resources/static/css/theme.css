@@ -85,8 +85,24 @@ td, th {
     margin-bottom:35px;
 }
 
+.projectedSpendingItem {
+	background-color:green;
+	border-top-left-radius: 50px 100px; 
+	border-bottom-left-radius: 50px 100px;
+	height:100%;
+}
+
+.projectedSpendingItemExceeded {
+	background-color:green;
+	border-top-left-radius: 50px 100px; 
+	border-bottom-left-radius: 50px 100px;
+    border-top-right-radius: 50px 100px; 
+	border-bottom-right-radius: 50px 100px;
+	height:100%;
+}
 .projectedSpendingProgress {
     font-size:30px;
+    margin:0px;
     float:left;
     height:40px;
     padding:0px;
@@ -97,7 +113,7 @@ td, th {
     border-top-right-radius: 50px 100px;
     border-bottom-right-radius: 50px 100px;
     animation-name: fill;
-    animation-duration: 1s;
+    animation-duration: 1.5s;
 }
 
 @keyframes fill {

@@ -1,646 +1,177 @@
-var BLACKBAUD = BLACKBAUD || {};
-BLACKBAUD.api = {};
-(function() {
-    BLACKBAUD.api.querystring = {
-        getQueryStringValue: function(h, f) {
-            var g, e;
-            if (!f) {
-                f = window.location.search
-            }
-            f = f.toLowerCase();
-            g = new RegExp("[?|&]" + h + "=(.*?)&");
-            e = g.exec(f + "&");
-            if (!e || e.length < 2) {
-                return ""
-            }
-            return decodeURIComponent(e[1].replace("+", " "))
-        }
-    };
-    BLACKBAUD.api.pageInformation = {
-        rootPath: "",
-        pageId: ""
-    };
-    var c = [];
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Dashboard</title>
+  </head>
+  <body>
 
-    function a(e) {
-        if (!c[e]) {
-            c[e] = new easyXDM.Rpc({
-                remote: e + "client/scripts/easyXDM/cors/index.html"
-            }, {
-                remote: {
-                    ajax: {}
-                }
-            })
-        }
-        return c[e]
-    }
+<div class="col-12" style="padding:0px;">
+  <div class="col-7 center shadow" style="padding:1em;">
+ 
+  
+  <h2 style="margin-bottom:25px;margin-top:25px;">Dashboard </h2>
+  
+  <!--  Remaining Funds -->
+  <div class="col-4" style="padding:1px;text-align:center;">
+    <div class="col-12 widget">
+        <h2>Remaining Funds</h2>
+        <div class="money" style="margin-top:25px;"><h1><p th:text="${balance}"></p></h1></div>
+        <div class="col-12" style="text-align:right; padding:0px;"><a href='#' onclick="document.getElementById('AddIncome').style.display='block'" style="color:#fff;font-size:16px;">Add Income</a>
+        </div>
+    </div>
+</div>
+    
+<!--  Add Income modal -->
+<div id="AddIncome" class="modal">
+    <div class="modal-content animate-top">
+        <div class="col-12" style="background-color:#fff;padding:30px;">
 
-    function b(e, h, g, f) {
-        if (h === "success") {
-            if (g) {
-                g(JSON.parse(e.responseText))
-            }
-        } else {
-            if (e.status === 400) {
-                if (f) {
-                    f(JSON.parse(e.responseText))
-                }
-            } else {
-                if (f) {
-                    f()
-                }
-            }
-        }
-    }
+            <span onclick="document.getElementById('AddIncome').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
 
-    function d(h, g, e, f) {
-        if (g) {
-            g.ajax(h, function(i) {
-                b(i.jqXHR, i.textStatus, e, f)
-            }, function() {
-                f()
-            })
-        } else {
-            h.complete = function(i, j) {
-                b(i, j, e, f)
-            };
-            $.ajax(h)
-        }
-    }(function() {
-        BLACKBAUD.api.CountryService = function(g) {
-            var e, f;
-            if (typeof g === "string") {
-                f = g
-            } else {
-                if (typeof g === "object") {
-                    f = g.url;
-                    e = g.crossDomain
-                }
-            }
-            if (!f) {
-                f = BLACKBAUD.api.pageInformation.rootPath
-            }
-            if (e) {
-                this._rpc = a(f)
-            }
-            this.baseUrl = f + "WebApi"
-        };
-        BLACKBAUD.api.CountryService.prototype = {
-            getCountries: function(e, g) {
-                var f = this.baseUrl + "/Country";
-                d({
-                    url: f,
-                    type: "GET"
-                }, this._rpc, e, g)
-            },
-            getStates: function(g, e, h) {
-                var f = this.baseUrl + "/Country/" + g + "/State";
-                d({
-                    url: f,
-                    type: "GET"
-                }, this._rpc, e, h)
-            },
-            getAddressCaptions: function(g, e, h) {
-                var f = this.baseUrl + "/Country/" + g + "/AddressCaptions";
-                d({
-                    url: f,
-                    type: "GET"
-                }, this._rpc, e, h)
-            }
-        }
-    }());
-    (function() {
-        BLACKBAUD.api.CodeTableService = function(g) {
-            var e, f;
-            if (typeof g === "string") {
-                f = g
-            } else {
-                if (typeof g === "object") {
-                    f = g.url;
-                    e = g.crossDomain
-                }
-            }
-            if (!f) {
-                f = BLACKBAUD.api.pageInformation.rootPath
-            }
-            if (e) {
-                this._rpc = a(f)
-            }
-            this.baseUrl = f + "WebApi"
-        };
-        BLACKBAUD.api.CodeTableService.prototype = {
-            getEntries: function(h, e, f) {
-                var g = this.baseUrl + "/CodeTable/" + h;
-                d({
-                    url: g,
-                    type: "GET"
-                }, this._rpc, e, f)
-            },
-            getTitles: function(h, e, f) {
-                var g = this.baseUrl + "/CodeTable/" + h + "/Title";
-                d({
-                    url: g,
-                    type: "GET"
-                }, this._rpc, e, f)
-            }
-        }
-    }());
-    (function() {
-        BLACKBAUD.api.QueryService = function(g) {
-            var e, f;
-            if (typeof g === "string") {
-                f = g
-            } else {
-                if (typeof g === "object") {
-                    f = g.url;
-                    e = g.crossDomain
-                }
-            }
-            if (!f) {
-                f = BLACKBAUD.api.pageInformation.rootPath
-            }
-            if (e) {
-                this._rpc = a(f)
-            }
-            this.baseUrl = f + "WebApi"
-        };
-        BLACKBAUD.api.QueryService.prototype = {
-            getResults: function(g, l, e, k) {
-                var n, f, j, h, o, m = this.baseUrl + "/Query/" + g;
-                if (k) {
-                    o = "";
-                    for (f = 0; f < k.length; f++) {
-                        j = k[f];
-                        n = j.columnName;
-                        h = j.value;
-                        if (n && h) {
-                            if (o.length > 0) {
-                                o += "&"
-                            }
-                            o += encodeURIComponent(n) + "=" + encodeURIComponent(h)
-                        }
-                    }
-                    if (o.length > 0) {
-                        m += "?" + o
-                    }
-                }
-                d({
-                    url: m,
-                    type: "GET"
-                }, this._rpc, l, e)
-            }
-        }
-    }());
-    (function() {
-        BLACKBAUD.api.UserService = function(g) {
-            var e, f;
-            if (typeof g === "string") {
-                f = g
-            } else {
-                if (typeof g === "object") {
-                    f = g.url;
-                    e = g.crossDomain
-                }
-            }
-            if (!f) {
-                f = BLACKBAUD.api.pageInformation.rootPath
-            }
-            if (e) {
-                this._rpc = a(f)
-            }
-            this.baseUrl = f + "WebApi"
-        };
-        BLACKBAUD.api.UserService.prototype = {
-            getProfile: function(e, g) {
-                var f = this.baseUrl + "/User";
-                d({
-                    url: f,
-                    type: "GET"
-                }, this._rpc, e, g)
-            }
-        }
-    }());
-    (function() {
-        BLACKBAUD.api.ImageService = function(g) {
-            var e, f;
-            if (typeof g === "string") {
-                f = g
-            } else {
-                if (typeof g === "object") {
-                    f = g.url;
-                    e = g.crossDomain
-                }
-            }
-            if (!f) {
-                f = BLACKBAUD.api.pageInformation.rootPath
-            }
-            if (e) {
-                this._rpc = a(f)
-            }
-            this.baseUrl = f + "WebApi"
-        };
-        BLACKBAUD.api.ImageService.prototype = {
-            getImagesByFolderGUID: function(f, e, h) {
-                var g = this.baseUrl + "/Images?FolderGUID=" + encodeURIComponent(f);
-                d({
-                    url: g,
-                    type: "GET"
-                }, this._rpc, e, h)
-            },
-            getImagesByTag: function(e, f, h) {
-                var g = this.baseUrl + "/Images?Tag=" + encodeURIComponent(e);
-                d({
-                    url: g,
-                    type: "GET"
-                }, this._rpc, f, h)
-            },
-            getImagesByFolder: function(h, e, g) {
-                var f = this.baseUrl + "/Images/" + encodeURIComponent(h);
-                d({
-                    url: f,
-                    type: "GET"
-                }, this._rpc, e, g)
-            }
-        }
-    }());
-    (function() {
-        BLACKBAUD.api.ConsentOptionService = function(g) {
-            var e, f;
-            if (typeof g === "string") {
-                f = g
-            } else {
-                if (typeof g === "object") {
-                    f = g.url;
-                    e = g.crossDomain
-                }
-            }
-            if (!f) {
-                f = BLACKBAUD.api.pageInformation.rootPath
-            }
-            if (e) {
-                this._rpc = a(f)
-            }
-            this.baseUrl = f + "WebApi"
-        };
-        BLACKBAUD.api.ConsentOptionService.prototype = {
-            getConsentOptions: function(h, e, g) {
-                var f = this.baseUrl + "/ConsentOption/" + h;
-                d({
-                    url: f,
-                    type: "GET"
-                }, this._rpc, e, g)
-            }
-        }
-    }())
-}());
-(function() {
-    var d, h, f;
-    d = 500;
+<div class="col-12"><h2>Add Income</h2></div>
+            <form method="post" th:action="@{/AddIncome}">
+                <div class="col-4" style="margin-top:5px;">Amount:</div>
+                <div class="col-6">    
+                    <span class="currency">
+                        <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount"></span>
+                </div>
+                <div class="col-4">Date:</div>
+                <div class="col-6"><input type="date" class="field" name="date" id="date" required  value="<?php echo $today; ?>"></div></br></br>
+                <div class="col-4" style="float:right;"><input type="submit" value="Add" class="button"></div>
+            </form>
 
-    function c(i, j) {
-        var k = "BBElementBlock";
-        if (!i) {
-            i = "Processing..."
-        }
-        if (j) {
-            k += " BBPageBlock"
-        }
-        return {
-            message: "<div class='" + k + "'><span>" + i + "</span></div>",
-            overlayCSS: {
-                backgroundColor: "#CCCCCC"
-            }
-        }
-    }
-    f = [];
+        </div>
+    </div>
+</div>
 
-    function b(i) {
-        if (i) {
-            if (typeof i === "string") {
-                return document.getElementById(i)
-            } else {
-                if (i instanceof $) {
-                    return i[0]
-                }
-            }
-            return i.dom || i
-        }
-        return null
-    }
 
-    function g(k) {
-        var j, l;
-        j = f.length;
-        while (j--) {
-            l = f[j];
-            if (l.el === k) {
-                return l
-            }
-        }
-    }
+<!--  Projected Savings -->
+<div class="col-4" style="padding:1px;text-align:center;">
+    <div class="col-12 widget">
+        <h2>Projected Savings</h2>
 
-    function a(j) {
-        var i;
-        i = {
-            el: j,
-            waitCount: 0
-        };
-        f.push(i);
-        return i
-    }
+        <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSavings}"></p></h1></div>
+        <div class='col-12' style='text-align:right;padding:0px;'><a href='ViewRecentSpending.php' style='color:#fff;font-size:16px;'>View Expenses</a></div>
 
-    function e(j) {
-        var k;
-        k = f.length;
-        while (k--) {
-            if (j === f[k]) {
-                f.splice(k, 1);
-                break
-            }
-        }
-    }
-    BLACKBAUD.api.blockElement = function(l, k, i) {
-        var j, m;
-        $.blockUI.defaults.css = {};
-        if (i === false || i === 0) {
-            i = 0
-        } else {
-            i = i || d
-        }
-        l = b(l);
-        m = g(l);
-        if (!m) {
-            m = a(l);
-            if (l) {
-                j = setTimeout(function() {
-                    $(l).block(c(k, false))
-                }, i)
-            } else {
-                j = setTimeout(function() {
-                    $.blockUI(c(k, true))
-                }, i)
-            }
-            m.delayHandle = j
-        }
-        m.waitCount++
-    };
-    BLACKBAUD.api.unblockElement = function(j) {
-        var i, k;
-        j = b(j);
-        k = g(j);
-        if (k) {
-            k.waitCount--;
-            if (k.waitCount === 0) {
-                i = k.delayHandle;
-                if (i) {
-                    clearTimeout(i);
-                    k.delayHandle = null
-                }
-                if (j) {
-                    $(j).unblock()
-                } else {
-                    $.unblockUI()
-                }
-                e(k)
-            }
-        }
-    }
-})();
-(function() {
-    function a(f) {
-        return f.baseUrl + "WebApi/" + f.contextId + "/Donation"
-    }
-    var d = [];
+    </div>
+</div>
 
-    function b(f) {
-        if (!d[f]) {
-            if (window.easyXDM) {
-                d[f] = new easyXDM.Rpc({
-                    remote: f + "client/scripts/easyXDM/cors/index.html"
-                }, {
-                    remote: {
-                        ajax: {}
-                    }
-                })
-            }
-        }
-        return d[f]
-    }
+ <!--  Total Budget -->
+<div class="col-4" style="padding:1px;text-align:center;">
+    <div class="col-12 widget">
+        <h2>Total Budget</h2>
+            <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSpending}"></p></h1></div>
+            <div class='col-12' style='text-align:right;padding:0px;'><a href='/ManageBudget' style='color:#fff;font-size:16px;'>Manage Budget</a></div>
 
-    function c(f, i, h, g) {
-        if (i === "success") {
-            if (h) {
-                h(JSON.parse(f.responseText))
-            }
-        } else {
-            if (f.status === 400) {
-                if (g) {
-                    g(JSON.parse(f.responseText))
-                }
-            } else {
-                if (g) {
-                    g()
-                }
-            }
-        }
-    }
+    </div>
+</div>
 
-    function e(j, i, g, h) {
-        function f(k) {
-            if (h) {
-                if (k && k.data) {
-                    h(k.data)
-                } else {
-                    h()
-                }
-            }
-        }
-        if (i) {
-            i.ajax(j, function(k) {
-                c(k.jqXHR, k.textStatus, g, f)
-            }, function() {
-                h()
-            })
-        } else {
-            j.complete = function(k, l) {
-                c(k, l, g, h)
-            };
-            $.ajax(j)
-        }
-    }
-    BLACKBAUD.api.DonationService = function(g, i) {
-        var f, h;
-        if (typeof i === "string") {
-            h = i
-        } else {
-            if (typeof i === "object") {
-                h = i.url;
-                f = i.crossDomain
-            }
-        }
-        if (!h) {
-            h = BLACKBAUD.api.pageInformation.rootPath
-        }
-        if (f) {
-            this._rpc = b(h)
-        }
-        this.baseUrl = h;
-        this.contextId = g
-    };
-    BLACKBAUD.api.DonationService.prototype = {
-        createDonation: function(h, f, i) {
-            var g = a(this) + "/Create";
+<!--  Recent Spending -->
 
-            function j(k) {
-                if (j) {
-                    f(k)
-                }
-                if (k.BBSPCheckoutUri) {
-                    location.href = k.BBSPCheckoutUri
-                } else {
-                    if (k.PaymentPageUri) {
-                        location.href = k.PaymentPageUri
-                    }
-                }
-            }
-            e({
-                url: g,
-                type: "POST",
-                data: JSON.stringify(h),
-                contentType: "application/json"
-            }, this._rpc, j, i)
-        },
-        getDonation: function(g, f, i) {
-            var h = a(this) + "/" + g;
-            e({
-                url: h,
-                type: "GET"
-            }, this._rpc, f, i)
-        },
-        completeBBSPDonation: function(g, f, i) {
-            var h = a(this) + "/" + g + "/CompleteBBSPDonation";
-            e({
-                url: h,
-                type: "POST"
-            }, this._rpc, f, i)
-        },
-        getDonationConfirmationHtml: function(g, f, i) {
-            var h = a(this) + "/" + g + "/ConfirmationHtml";
-            e({
-                url: h,
-                type: "GET"
-            }, this._rpc, f, i)
-        },
-        getRecurringGiftInstallmentAmount: function(h, f) {
-            var i = 0,
-                g = 0,
-                j = 0;
-            i = parseFloat(h).toFixed(2);
-            g = parseInt(f, 10);
-            if (!i || !g || i <= 0 || g <= 0) {
-                return 0
-            }
-            j = i / Math.floor(g);
-            return j.toFixed(2)
-        },
-        getRecurringGiftLastPaymentDate: function(k, i, m, q, l, v) {
-            var n = 0,
-                x = 0,
-                t, z, f = 0,
-                B = 0,
-                r = -1,
-                w = false,
-                u = false,
-                j = false,
-                s = 0,
-                o = 0,
-                p = 0,
-                h = 0;
-            n = parseInt(k, 10) - 1;
-            x = parseInt(i, 10);
-            t = new Date(m);
-            z = t;
-            if (v && x == 1) {
-                f = 0;
-                B = 0;
-                r = parseInt(v, 10)
-            } else {
-                if (x == 7) {
-                    f = 0;
-                    B = 0
-                } else {
-                    f = parseInt(q, 10) - 1;
-                    B = parseInt(l, 10)
-                }
-            }
-            if (!n || n <= 0) {
-                return
-            }
-            if (!x || 1 > x || (x > 4 && x != 7)) {
-                return
-            }
-            if (!m) {
-                return
-            }
-            w = (f && 0 < f && f < 13);
-            u = (B && 0 < B && B < 32);
-            j = (r >= 0 && r < 7);
-            if (w && !u || (x == 1 && !j)) {
-                return
-            } else {
-                if (w) {
-                    s = t.getMonth();
-                    o = t.getDate();
-                    p = t.getFullYear();
-                    h = (f < s) || (f === s && B < o);
-                    if (h) {
-                        t.setYear(p + 1)
-                    }
-                    t.setDate(B);
-                    t.setMonth(f)
-                } else {
-                    if (u) {
-                        if (B < t.getDate()) {
-                            t.setMonth(t.getMonth() + 1)
-                        }
-                        t.setDate(B)
-                    } else {
-                        if (m && j) {
-                            var A = t.getDay();
-                            if (A != r) {
-                                var g = new Date(m),
-                                    y = new Date(m);
-                                if (A != 1) {
-                                    y.setDate(t.getDate() - A + (A == 0 ? -6 : 1))
-                                }
-                                while (y < g || y.getDay() != r) {
-                                    y.setDate(y.getDate() + 1)
-                                }
-                                t = y
-                            }
-                        }
-                    }
-                }
-            }
-            switch (x) {
-                case 1:
-                    z = t;
-                    z.setDate(t.getDate() + (7 * n));
-                    break;
-                case 2:
-                    z.setMonth(t.getMonth() + n);
-                    break;
-                case 3:
-                    z.setMonth(t.getMonth() + (3 * n));
-                    break;
-                case 4:
-                    z.setYear(t.getFullYear() + n);
-                    break;
-                case 7:
-                    z.setDate(t.getDate() + (28 * n));
-                    break
-            }
-            return z
-        }
-    }
-}());
+    <div th:if="${noAccountActivity}"><div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No account activity.</div></div>
+	<div th:if="${transactionCategories}">
+
+	  <div class="col-12" style="padding:0px;margin-top:50px;">
+	  
+	      <h2 style="margin-bottom:15px;">Recent Spending </h2>
+	        <table>
+	          <tr>
+	            <th>Category</th>
+	            <th>Expense</th>
+	            <tr>
+	            <td th:switch="${#lists.size(transactionCategories)}">
+	            		<span th:case="*">
+				        	<p th:each="transaction:${transactionCategories}" th:text="${transaction.category}"/>
+				        </span>      
+	            </td>
+	            
+	            <td th:switch="${#lists.size(categorySpending)}">
+	            		<span th:case="*">
+				        	<p th:each="transaction:${categorySpending}" th:text="${transaction.expense}"/>
+				        </span>      
+	            </td>
+	            	            
+	            </tr>
+	        </table>
+	        <a href="ViewRecentSpending.php" style="float:right;margin-bottom:25px;">View All</a>
+	   </div>
+ 
+	</div>
+	
+<!-- Projected Spending -->
+
+   <div class = "col-12"  th:if="${noBudget}">
+	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
+   			<div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No projected expenses. </br><a href="/ManageBudget">Manage Budget</a></div>
+   	</div>
+   	
+   
+   	   <div class = "col-12" style="padding:0px;margin-top:50px;" th:if="${budgetStatus}">
+	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
+	        
+
+         
+     
+     <div th:each="item : ${budgetStatus}" class="col-12 projectedSpendingProgress" id="spendingProgress" style="margin-bottom:25px;">
+     </div> 
+             <script type="text/javascript" th:inline="javascript">
+    
+                            var budgetList = [[${budgetStatus}]];
+                            
+                            for (i = 0; i < budgetList.length; i++)
+                            	{
+                            		var newItem = document.createElement("div");
+                            		newItem.style.marginBottom = "27px";
+                            		
+                            		if (budgetList[i].percentageSpent < 101)
+                            			{
+                                		newItem.style.width = budgetList[i].percentageSpent + "%";
+                                   		newItem.className = "projectedSpendingItem";
+                            			}
+                            		else 
+                            			{
+                                  		newItem.className = "projectedSpendingItemExceeded";
+                                		newItem.style.width = "100%";
+                            			}
+
+                            	
+                            		document.getElementById("spendingProgress").appendChild(newItem);
+                            	}
+     </script>  
+	        <table>
+	          <tr>
+	            <th>Category</th>
+	            <th>Budget</th>
+	            <th>Spent</th>
+	            <tr>
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.category}"/>
+				        </span>  
+	            </td>
+	            
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.budgetAmount}"/>
+			        </span>           
+	            </td>
+	            
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.budgetSpent}"/>
+			            </span>           
+	            </td>
+	            
+	            
+	            </tr>
+	        </table>
+   	 </div>
+   	
+
+    <div class="col-4" style="float:right;padding:0px;margin-top:25px;">   
+          <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">
+        </div>
+
+
+</div>
+</div>

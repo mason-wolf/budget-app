@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.dao.UserJdbc;
 import com.projectbudget.budgetapp.model.Account;
@@ -78,7 +80,7 @@ public class DashboardController {
 	}
 	
     @GetMapping({"/Dashboard"})
-    public String dashoard(Model model) throws ParseException {
+    public String dashoard(Model model) throws ParseException  {
     	
     	List<Account> accounts = UserJdbc.query.getUserAccounts(currentUser());
     	
@@ -93,7 +95,7 @@ public class DashboardController {
     	}
     }
     
-    public void populateDashboard(Model model) throws ParseException
+    public void populateDashboard(Model model) throws ParseException 
     {
 		double totalBudget = 0;
 		
@@ -126,6 +128,7 @@ public class DashboardController {
 		model.addAttribute("projectedSavings", "$" + projectedSavings);
 		model.addAttribute("projectedSpending", "$" + totalBudget);
 		
+
 		if (transactionHistory.size() != 0)
 		{
 			model.addAttribute("transactionHistory", transactionHistory);
