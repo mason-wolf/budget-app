@@ -12,7 +12,7 @@ public interface AccountDao {
 	
 	public void addAccount(String username, Account account);
 	public Account getAccount(String username);
-	public void addIncome(String username, double amount);
+	public void updateBalance(String username, double amount);
 	public void addTransaction(Transaction transaction);
 	public void addBudgetItem(String username, Budget budgetItem);
 	public void deleteBudgetItem(int budgetId);

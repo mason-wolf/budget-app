@@ -65,8 +65,10 @@ public class DashboardController {
 
 	@RequestMapping(value = "/AddIncome", method = RequestMethod.POST)
 	public String addIncome(Model model, @RequestParam("amount") String amount, @RequestParam("date") String date) throws Exception {
-		
-		AccountJdbc.query.addIncome(currentUser(), Double.parseDouble(amount));
+		Account account = AccountJdbc.query.getAccount(currentUser());
+		double currentBalance = account.getBalance();
+		double newBalance = currentBalance + Double.parseDouble(amount);
+		AccountJdbc.query.updateBalance(currentUser(), newBalance);
 		populateDashboard(model);
 		return "Dashboard";
 	}

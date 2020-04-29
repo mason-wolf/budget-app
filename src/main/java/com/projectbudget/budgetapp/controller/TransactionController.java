@@ -3,32 +3,31 @@ package com.projectbudget.budgetapp.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+
 import javax.validation.Valid;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.model.Account;
 import com.projectbudget.budgetapp.model.Category;
 import com.projectbudget.budgetapp.model.Transaction;
 
+
 @Controller
 public class TransactionController {
 	
+
 	@GetMapping({"/AddExpense"})
 	public String addExpense(Model model)
 	{
@@ -64,13 +63,21 @@ public class TransactionController {
 		String categoryTitle = AccountJdbc.query.getTransactionCategory(Integer.parseInt(category));
 		
 		Transaction transaction = new Transaction();
+
+		Account account = AccountJdbc.query.getAccount(currentUser());
 		
 		transaction.setOwner(currentUser());
-		transaction.setAccount(AccountJdbc.query.getAccount(currentUser()).getAccountName());
+		transaction.setAccount(account.getAccountName());
 		transaction.setCategory(categoryTitle);
 		transaction.setDate(date);
 		transaction.setExpense(expense);
-		transaction.setIncome(AccountJdbc.query.getAccount(currentUser()).getBalance());
+		
+		double currentBalance = account.getBalance();
+		double newBalance = currentBalance - expense;
+		
+		AccountJdbc.query.updateBalance(currentUser(), newBalance);
+
+		transaction.setIncome(newBalance);
 		
 		AccountJdbc.query.addTransaction(transaction);
 		

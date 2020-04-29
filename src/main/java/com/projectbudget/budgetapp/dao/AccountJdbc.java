@@ -58,11 +58,11 @@ public class AccountJdbc implements AccountDao{
 	}
 
 	@Override
-	public void addIncome(String username, double amount) {
+	public void updateBalance(String username, double amount) {
 		
 		String accountIdQuery = "select id from accounts where accountOwner = ? and isPrimary = 1";
 		int accountId =  jdbcTemplateObject.queryForObject(accountIdQuery, new Object[] { username}, Integer.class);
-		String addIncomeQuery = "update accounts set balance = balance + ? where id = ?";
+		String addIncomeQuery = "update accounts set balance = ? where id = ?";
 		jdbcTemplateObject.update(addIncomeQuery, amount, accountId);
 		
 	}
