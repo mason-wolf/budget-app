@@ -68,9 +68,25 @@ public class DashboardController {
 		Account account = AccountJdbc.query.getAccount(currentUser());
 		double currentBalance = account.getBalance();
 		double newBalance = currentBalance + Double.parseDouble(amount);
-		AccountJdbc.query.updateBalance(currentUser(), newBalance);
+		AccountJdbc.query.updateBalance(currentUser(), newBalance);		
 		populateDashboard(model);
 		return "Dashboard";
+	}
+	
+	@RequestMapping(value = "/AccountActivity", method = RequestMethod.GET)
+	public String viewTransactions(Model model)
+	{
+		List<Transaction> accountActivity = AccountJdbc.query.getTransactionHistory(currentUser());
+		
+		if (accountActivity.size() == 0)
+		{
+			model.addAttribute("noAccountActivity");
+		}
+		else 
+		{
+			model.addAttribute("accountActivity", accountActivity);
+		}
+		return "AccountActivity";
 	}
 	
 	@RequestMapping(value = "RemoveTransaction/{transactionId}", method = RequestMethod.GET)
@@ -78,7 +94,7 @@ public class DashboardController {
 
 		AccountJdbc.query.deleteTransasction(transactionId);
 		populateDashboard(model);
-		return "redirect:/Dashboard";
+		return "redirect:/AccountActivity";
 	}
 	
     @GetMapping({"/Dashboard"})

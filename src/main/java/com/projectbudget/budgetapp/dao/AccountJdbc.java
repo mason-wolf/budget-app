@@ -212,7 +212,7 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<Transaction> getTransactionHistory(String username) {
 		
-		String query = "select * from transactions where owner= ? order by id desc";
+		String query = "select * from transactions where owner= ? order by id desc limit 100";
 		List<Transaction> transactionList = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
 		return transactionList;
 	}
