@@ -131,8 +131,8 @@ public class AccountJdbc implements AccountDao{
 
 	@Override
 	public void addTransaction(Transaction transaction) {
-		String query = "insert into transactions (owner, income, date, expense, category, account, archived) values (?, ?, ?, ?, ?, ?, '0')";
-		jdbcTemplateObject.update(query, transaction.getOwner(), transaction.getIncome(), transaction.getDate(), transaction.getExpense(), transaction.getCategory(), transaction.getAccount());
+		String query = "insert into transactions (owner, date, amount, category, account, archived) values (?, ?, ?, ?, ?, '0')";
+		jdbcTemplateObject.update(query, transaction.getOwner(), transaction.getDate(), transaction.getAmount(), transaction.getCategory(), transaction.getAccount());
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<Transaction> getTotalSpentByCategory(String username) {
 
-		String query = "select id, owner, income, archived, date, category, account, sum(expense) as expense from transactions where owner= ? and archived='0' group by category order by category";
+		String query = "select id, owner, archived, date, category, account, sum(amount) as amount from transactions where owner= ? and archived='0' group by category order by category";
 		List<Transaction> transactions = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
 		return transactions;
 	}
@@ -154,20 +154,21 @@ public class AccountJdbc implements AccountDao{
 	public void addBudgetItem(String username, Budget budgetItem) {
 		String categoryQuery = "select title from budgetCategories where id=?";
 		String category = jdbcTemplateObject.queryForObject(categoryQuery, new Object[] { budgetItem.getBudgetId() }, String.class);
-		
-		String budgetItemQuery = "select id from budgets where category = ?";
+		String budgetItemQuery = "select id from budgets where category = ? and owner = ?";
 		
 		int budgetId;
 		
 		try 
 		{
-			budgetId = jdbcTemplateObject.queryForObject(budgetItemQuery, new Object[] { category }, Integer.class);
-			String updateBudgetQuery = "update budgets set amount = ? where id = ?";
-			jdbcTemplateObject.update(updateBudgetQuery, budgetItem.getAmount(), budgetId);
+			// If the projected expense already exists, update the budget amount.
+			budgetId = jdbcTemplateObject.queryForObject(budgetItemQuery, new Object[] { category, username }, Integer.class);
+			System.out.println(budgetId);
+			String updateBudgetQuery = "update budgets set amount = ? where id = ? and owner=?";
+			jdbcTemplateObject.update(updateBudgetQuery, budgetItem.getAmount(), budgetId, username);
 		}
 		catch(Exception e)
 		{
-			
+			System.out.println(e);
 			String query = "insert into budgets (owner, category, archived, startDate, endDate, amount) values (?, ?, ?, ?, ?, ?)";
 			jdbcTemplateObject.update(query, username, category, budgetItem.getArchived(), budgetItem.getStartDate(), budgetItem.getEndDate(), budgetItem.getAmount());
 		}
@@ -198,12 +199,12 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<BudgetStatus> getbudgetStatus(String username) {
 
-		String query = "select budgets.category, sum(transactions.expense) as budgetSpent, budgets.amount as budgetAmount from budgets left outer join transactions\r\n" + 
+		String query = "select budgets.category, sum(transactions.amount) as budgetSpent, budgets.amount as budgetAmount from budgets left outer join transactions\r\n" + 
 				"on budgets.category = transactions.category where budgets.owner = ? group by budgets.category\r\n" + 
 				"UNION\r\n" + 
-				"select transactions.category, sum(transactions.expense) as budgetSpent, \r\n" + 
+				"select transactions.category, sum(transactions.amount) as budgetSpent, \r\n" + 
 				"budgets.amount as budgetAmount from transactions left outer join budgets on transactions.category = budgets.category \r\n" + 
-				"where transactions.owner = ?\r\n" + 
+				"where transactions.owner = ?\r\n and budgets.category != 'Income' " + 
 				"group by transactions.category";
 		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username, username }, new BudgetStatusMapper());
 		return budgetStatus;

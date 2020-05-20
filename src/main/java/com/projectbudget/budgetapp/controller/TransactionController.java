@@ -70,7 +70,7 @@ public class TransactionController {
 		transaction.setAccount(account.getAccountName());
 		transaction.setCategory(categoryTitle);
 		transaction.setDate(date);
-		transaction.setExpense(expense);
+		transaction.setAmount(expense);
 		
 		double currentBalance = account.getBalance();
 		double newBalance = currentBalance - expense;

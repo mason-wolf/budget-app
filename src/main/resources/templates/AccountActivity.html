@@ -8,7 +8,7 @@
   <div class="col-12" style="padding:0px">
     <div class="col-7 center shadow"  style="padding:0px;">
         <div class="col-12" style="padding:1em;">
-            <div class="col-12"><a href="/Dashboard">Dashboard</a> <span style="margin-left:15px;margin-right:15px;">></span> <a href="/ManageBudget">Account Activity</a></div>
+            <div class="col-12"><a href="/Dashboard">Dashboard</a></div>
             <div class="col-12">
                 <h2>Account Activity</h2><br>
                 
@@ -28,7 +28,7 @@
 						    <tr th:each="item : ${accountActivity}">
 							   <td><span th:text="${item.date}"></span></td>
 							   	<td><span th:text="${item.category}"></span></td>
-							   <td>$ <span th:text="${item.expense}"></span><a th:href="@{'/RemoveTransaction/' + ${item.transactionId}}" style="float:right;">remove</a></td>
+							   <td>$ <span th:text="${item.amount}"></span><a th:href="@{'/RemoveTransaction/' + ${item.transactionId}}" style="float:right;">remove</a></td>
 							</tr>
 						 </table>
                 
@@ -36,3 +36,28 @@
                 </div>
                 </div>
                 </div>
+                </div>
+                
+                <!--  Add Income modal -->
+<div id="AddIncome" class="modal">
+    <div class="modal-content animate-top">
+        <div class="col-12" style="background-color:#fff;padding:30px;">
+
+            <span onclick="document.getElementById('AddIncome').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
+
+<div class="col-12"><h2>Add Income</h2></div>
+            <form method="post" th:action="@{/AddIncome}">
+                <div class="col-4" style="margin-top:5px;">Amount:</div>
+                <div class="col-6">    
+                    <span class="currency">
+                        <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount"></span>
+                </div>
+                <div class="col-4">Date:</div>
+                <div class="col-6"><input type="date" class="field" name="date" id="date" required  value="<?php echo $today; ?>"></div></br></br>
+                <div class="col-4" style="float:right;"><input type="submit" value="Add" class="button"></div>
+            </form>
+
+        </div>
+    </div>
+</div>
+                

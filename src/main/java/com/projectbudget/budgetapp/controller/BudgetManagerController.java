@@ -74,26 +74,29 @@ public class BudgetManagerController {
 		
 	}
 	@RequestMapping(value = "/ManageBudget", method = RequestMethod.POST)
-	public String addProjectedExpense(@RequestParam("amount") String amount, Model model, @Valid int category)
+	public String addProjectedExpense(@RequestParam("amount") String amount, Model model, @Valid String category)
 	{
-		double budgetAmount = 0;
+		double budgetAmount = Double.parseDouble(amount);
 		
-		try 
-		{	
+
 			Budget newBudgetItem = new Budget();
 			newBudgetItem.setOwner(currentUser());
-			newBudgetItem.setBudgetId(category);
-			newBudgetItem.setAmount(budgetAmount = Double.parseDouble(amount));
+			newBudgetItem.setAmount(budgetAmount);
 			newBudgetItem.setStartDate(budgetStartDate());
 			newBudgetItem.setEndDate(budgetEndDate());
 			newBudgetItem.setArchived(false);
+
+			List<Category> categoryList = AccountJdbc.query.getBudgetCategories(currentUser());
+			
+			for (Category c : categoryList)
+			{
+				if (c.getTitle().contains(category))
+				{
+					newBudgetItem.setBudgetId(c.getCategoryId());
+				}
+			}
+			
 			AccountJdbc.query.addBudgetItem(currentUser(), newBudgetItem);
-		}
-		catch (Exception e)
-		{
-			System.out.println(e);
-			model.addAttribute("invalidAmount", "Please enter a valid amount.");
-		}
 
 		populateBudget(model);
 		return "ManageBudget";

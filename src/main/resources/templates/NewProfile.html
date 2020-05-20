@@ -9,8 +9,8 @@
    <div class="col-6 shadow center" style="background-color:#fff;">
 
         <form method="post" th:action="@{/NewProfile}">
-     <input type="hidden" name="newprofile">
-     <div class="col-12"><h2>Welcome <?php echo $username; ?></h2></br></br>Let's add some account information.</br></div>
+     <input type="hidden" name="userId" th:value="${userId}">
+     <div class="col-12"><h2>Welcome</h2></br></br>Let's add some account information.</br></div>
        <div class="col-12">Account Nickname:</div>
        <div class="col-12" ><input type="text" class="field" name="accountName" ></div>
        <div class="col-12">Account Type:</div>

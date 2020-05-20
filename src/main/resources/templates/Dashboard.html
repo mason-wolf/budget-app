@@ -1,27 +1,27 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head lang="en" th:include="header :: header"> 
 </head>
-    <title>Dashboard</title>
+    <title>Overview</title>
   </head>
   <body>
 
 <div class="col-12" style="padding:0px;">
+
   <div class="col-7 center shadow" style="padding:1em;">
  
-  
-  <h2 style="margin-bottom:25px;margin-top:25px;">Dashboard </h2>
   
   <!--  Remaining Funds -->
   <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
         <h2>Remaining Funds</h2>
-        <div class="money" style="margin-top:25px;"><h1><p th:text="${balance}"></p></h1></div>
-        <div class="col-12" style="text-align:right; padding:0px;"><a href='#' onclick="document.getElementById('AddIncome').style.display='block'" style="color:#fff;font-size:16px;">Add Income</a>
+        <div class="money" style="margin-top:25px;"><p th:text="${balance}"></div> 
+        <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
+        <a href='#' onclick="document.getElementById('AddIncome').style.display='block'">Add Income</a>
         </div>
     </div>
 </div>
-    
-<!--  Add Income modal -->
+   
+                <!--  Add Income modal -->
 <div id="AddIncome" class="modal">
     <div class="modal-content animate-top">
         <div class="col-12" style="background-color:#fff;padding:30px;">
@@ -44,15 +44,15 @@
     </div>
 </div>
 
-
 <!--  Projected Savings -->
 <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
         <h2>Projected Savings</h2>
 
-        <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSavings}"></p></h1></div>
-        <div class='col-12' style='text-align:right;padding:0px;'><a href='/AccountActivity' style='color:#fff;font-size:16px;'>View Expenses</a></div>
-
+        <div class='money' style='margin-top:25px;'><p th:text="${projectedSavings}"></p></div>
+        <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
+        <a href="/AccountActivity">Manage Account</a>
+        </div>
     </div>
 </div>
 
@@ -60,43 +60,16 @@
 <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
         <h2>Total Budget</h2>
-            <div class='money' style='margin-top:25px;'><h1><p th:text="${projectedSpending}"></p></h1></div>
-            <div class='col-12' style='text-align:right;padding:0px;'><a href='/ManageBudget' style='color:#fff;font-size:16px;'>Manage Budget</a></div>
-
+            <div class='money' style='margin-top:25px;'><p th:text="${projectedSpending}"></p></div>
+                    <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
+        <a href="/ManageBudget">Manage Budget</a>
+        </div>
     </div>
 </div>
 
 <!--  Recent Spending -->
 
-    <div th:if="${noAccountActivity}"><div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No account activity.</div></div>
-	<div th:if="${transactionCategories}">
 
-	  <div class="col-12" style="padding:0px;margin-top:50px;">
-	  
-	      <h2 style="margin-bottom:15px;">Recent Spending </h2>
-	        <table>
-	          <tr>
-	            <th>Category</th>
-	            <th>Expense</th>
-	            <tr>
-	            <td th:switch="${#lists.size(transactionCategories)}">
-	            		<span th:case="*">
-				        	<p th:each="transaction:${transactionCategories}" th:text="${transaction.category}"/>
-				        </span>      
-	            </td>
-	            
-	            <td th:switch="${#lists.size(categorySpending)}">
-	            		<span th:case="*">
-				        	<p th:each="transaction:${categorySpending}" th:text="${transaction.expense}"/>
-				        </span>      
-	            </td>
-	            	            
-	            </tr>
-	        </table>
-	        <a href="ViewRecentSpending.php" style="float:right;margin-bottom:25px;">View All</a>
-	   </div>
- 
-	</div>
 	
 <!-- Projected Spending -->
 
@@ -106,7 +79,7 @@
    	</div>
    	
    
-   	   <div class = "col-12" style="padding:0px;margin-top:50px;" th:if="${budgetStatus}">
+   	   <div class = "col-12" style="margin-top:30px;" th:if="${budgetStatus}">
 	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
 	        
 
@@ -132,19 +105,19 @@
                             		
                             		if (budgetList[i].percentageSpent < 101)
                             			{
-                                		newItem.style.width = budgetList[i].percentageSpent + "%";
+                                		newItem.style.width = budgetList[i].percentageSpent  + "%";
                                    		newItem.className = "projectedSpendingItem";
                                    		
 	                                		if (budgetList[i].percentageSpent > 75)
 	                                		{
-	                                			newItem.style.backgroundColor = "yellow";
+	                                			newItem.style.backgroundColor = "#e9ff40";
 	                                		}
 
                             			}
                             		else 
                             			{
                                   		newItem.className = "projectedSpendingItemExceeded";
-                            			newItem.style.backgroundColor = "red";
+                            			newItem.style.backgroundColor = "#ff5340";
                                 		newItem.style.width = "100%";
                             			}
 
@@ -153,7 +126,13 @@
                             	}
      </script>  
      
-     <div class="col-12" style="margin-top:25px;">
+    <div class="col-2" style="float:right;padding:0px;margin-top:35px;">   
+          <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">
+        </div>
+
+     
+     <div class="col-12" style="padding:0px;margin-top:35px;margin-bottom:100px;">
+          <h2 style="margin-bottom:25px;">Budget</h2>
 	        <table>
 	          <tr>
 	            <th>Category</th>
@@ -184,11 +163,5 @@
 	       </div>
    	 </div>
    	
-
-    <div class="col-4" style="float:right;padding:0px;margin-top:25px;">   
-          <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">
-        </div>
-
-
 </div>
 </div>

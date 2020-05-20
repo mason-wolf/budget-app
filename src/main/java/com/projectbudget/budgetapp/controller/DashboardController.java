@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,7 +45,7 @@ public class DashboardController {
 	// Add account information is no account exists for user.
 	@RequestMapping(value = "/NewProfile", method = RequestMethod.POST)
 	public String addAccount(Model model, @RequestParam("accountName") String accountName, @RequestParam("accountType") String accountType,
-			@RequestParam("income") String balance, @RequestParam("dateRecieved") String dateRecieved) throws Exception {
+			@RequestParam("income") String balance, @RequestParam("dateRecieved") String dateRecieved, @ModelAttribute("userName") String userName) throws Exception {
 
 		Account account = new Account();
 		account.setAccountName(accountName);
@@ -52,12 +53,13 @@ public class DashboardController {
 		account.setBalance(Double.parseDouble(balance));
 		account.setBudgetStartDate(dateRecieved);
 		account.isPrimary(true);
-	
+
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Auto & Transport");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Food & Dining");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Entertainment");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Personal Care");
 		AccountJdbc.query.addAccount(currentUser(), account);
+		
 		populateDashboard(model);
 		return "Dashboard";
 	}
@@ -65,10 +67,20 @@ public class DashboardController {
 
 	@RequestMapping(value = "/AddIncome", method = RequestMethod.POST)
 	public String addIncome(Model model, @RequestParam("amount") String amount, @RequestParam("date") String date) throws Exception {
+		
+		// Update the account balance.
 		Account account = AccountJdbc.query.getAccount(currentUser());
 		double currentBalance = account.getBalance();
 		double newBalance = currentBalance + Double.parseDouble(amount);
-		AccountJdbc.query.updateBalance(currentUser(), newBalance);		
+		AccountJdbc.query.updateBalance(currentUser(), newBalance);	
+		
+		// Create a new transaction to track income history.
+		Transaction transaction = new Transaction();
+		transaction.setOwner(currentUser());
+		transaction.setDate(date);
+		transaction.setAmount(Double.parseDouble(amount));
+		transaction.setCategory("Income");
+		AccountJdbc.query.addTransaction(transaction);
 		populateDashboard(model);
 		return "Dashboard";
 	}
@@ -80,7 +92,7 @@ public class DashboardController {
 		
 		if (accountActivity.size() == 0)
 		{
-			model.addAttribute("noAccountActivity");
+			model.addAttribute("noAccountActivity", accountActivity);
 		}
 		else 
 		{
@@ -92,6 +104,17 @@ public class DashboardController {
 	@RequestMapping(value = "RemoveTransaction/{transactionId}", method = RequestMethod.GET)
 	public String removeExpense(@PathVariable(value="transactionId") Integer transactionId, Model model) throws Exception {
 
+		// If the transaction is a source of income and the user removes it, update the account balance.
+		Account account = AccountJdbc.query.getAccount(currentUser());
+		Transaction transaction = AccountJdbc.query.getTransaction(transactionId);
+		
+		if (transaction.getCategory().contains("Income"))
+		{
+			double currentBalance = account.getBalance();
+			double newBalance = currentBalance - transaction.getAmount();
+			AccountJdbc.query.updateBalance(currentUser(), newBalance);
+		}
+		
 		AccountJdbc.query.deleteTransasction(transactionId);
 		populateDashboard(model);
 		return "redirect:/AccountActivity";

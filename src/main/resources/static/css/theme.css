@@ -86,7 +86,7 @@ td, th {
 }
 
 .projectedSpendingItem {
-	background-color:green;
+	background-color:#34eb80;
 	border-top-left-radius: 50px 100px; 
 	border-bottom-left-radius: 50px 100px;
 	height:100%;
@@ -129,24 +129,23 @@ td, th {
   }
 
 .money {
-    font-family: 'Heebo', sans-serif;
+    font-family: 'Heebo';
+    font-size:25px;
 }
 
 .widget {
-    font-size:15px;
+    font-size:30px;
     font-family: 'Heebo', sans-serif;
-    background-color:#578a53;
-    color: #fff;
 }
 
 .widget h2 {
-    font-weight: 100;
-    font-size: 30px;
+    font-weight: 200;
+    font-size: 35px;
     font-family: heebo;
 }
 
 h2 {
-    font-size: 30px;
-    font-family: heebo;
-    font-weight: 300;
+    font-size: 35px;
+    font-family: 'Heebo';
+    font-weight: 200;
 }

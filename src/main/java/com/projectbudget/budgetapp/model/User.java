@@ -2,6 +2,7 @@ package com.projectbudget.budgetapp.model;
 
 public class User {
 	
+	int userId;
 	String username;
 	String password;
 	
@@ -12,6 +13,16 @@ public class User {
 	}
 	
 	public User() { } ;
+	
+	public int getUserId()
+	{
+		return userId;
+	}
+	
+	public void setUserId(int userId)
+	{
+		this.userId = userId;
+	}
 	
 	public String getUserName()
 	{

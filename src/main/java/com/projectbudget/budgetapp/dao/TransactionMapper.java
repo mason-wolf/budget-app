@@ -13,9 +13,8 @@ public class TransactionMapper  implements RowMapper<Transaction>{
 		Transaction transaction = new Transaction();
 		transaction.setTransactionId(rs.getInt("id"));
 		transaction.setOwner(rs.getString("owner"));
-		transaction.setIncome(Double.parseDouble(rs.getString("income")));
 		transaction.setDate(rs.getString("date"));
-		transaction.setExpense(Double.parseDouble(rs.getString("expense")));
+		transaction.setAmount(Double.parseDouble(rs.getString("amount")));
 		transaction.setCategory(rs.getString("category"));
 		transaction.setAccount(rs.getString("account"));
 		

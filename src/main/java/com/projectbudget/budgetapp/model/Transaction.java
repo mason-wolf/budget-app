@@ -7,7 +7,7 @@ public class Transaction {
 	private Double income;
 	private String date;
 	private Boolean archived;
-	private Double expense;
+	private Double amount;
 	private String category;
 	private String account;
 	
@@ -18,7 +18,7 @@ public class Transaction {
 	public Transaction(String category, double amount)
 	{
 		this.category = category;
-		this.expense = amount;
+		this.amount = amount;
 	}
 	public int getTransactionId() {
 		return transactionId;
@@ -62,12 +62,12 @@ public class Transaction {
 		this.archived = status;
 	}
 	
-	public Double getExpense() {
-		return this.expense;
+	public Double getAmount() {
+		return this.amount;
 	}
 	
-	public void setExpense(Double expense) {
-		this.expense = expense;
+	public void setAmount(Double amount) {
+		this.amount = amount;
 	}
 	
 	public String getCategory() {
