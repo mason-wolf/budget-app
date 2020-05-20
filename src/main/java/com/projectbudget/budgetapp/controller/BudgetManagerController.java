@@ -134,21 +134,15 @@ public class BudgetManagerController {
 		String currentMonthFormatted = currentMonthLowerCase.substring(0, 1).toUpperCase() + currentMonthLowerCase.substring(1);
 		
 		String firstDayOfMonth = currentMonthFormatted + " 1, " + currentDate.getYear();
-		String fifteenthOfMonth = currentMonthFormatted + " 15, " + currentDate.getYear();
+	//	String fifteenthOfMonth = currentMonthFormatted + " 15, " + currentDate.getYear();
 		int lengthOfMonth = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1).getMonth().length(Year.of(currentDate.getYear()).isLeap());
 		String lastDayOfMonth = currentMonthFormatted + " " + lengthOfMonth + ", " + currentDate.getYear();
 				
 		String budgetTimeframe;
 
-		if (currentDate.getDayOfMonth() <= 15)
-		{
-			budgetTimeframe = firstDayOfMonth + " - " + fifteenthOfMonth;
-		}
-		else
-		{
-			budgetTimeframe = fifteenthOfMonth + " - " + lastDayOfMonth;
-		}
-		
+
+		budgetTimeframe = firstDayOfMonth + " - " + lastDayOfMonth;
+
 		return budgetTimeframe;
 	}
 	
@@ -160,15 +154,15 @@ public class BudgetManagerController {
 		int currentMonth = currentDate.getMonthValue();
 		int currentYear = currentDate.getYear();
 		
-		if (currentDate.getDayOfMonth() <= 15)
-		{
+//		if (currentDate.getDayOfMonth() <= 15)
+//		{
 			budgetStartDate = currentMonth + "/01/" + currentYear;
-		}
-		else
-		{
-			budgetStartDate = currentMonth + "/15/" + currentYear;
-		}
-		
+//		}
+//		else
+//		{
+//			budgetStartDate = currentMonth + "/15/" + currentYear;
+//		}
+//		
 		return budgetStartDate;	
 	}
 	
@@ -181,15 +175,15 @@ public class BudgetManagerController {
 		int currentYear = currentDate.getYear();
 		int lengthOfMonth = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1).getMonth().length(Year.of(currentDate.getYear()).isLeap());
 		
-		if (currentDate.getDayOfMonth() <= 15)
-		{
-			budgetEndDate = currentMonth + "/15/" + currentYear;
-		}
-		else
-		{
+//		if (currentDate.getDayOfMonth() <= 15)
+//		{
+//			budgetEndDate = currentMonth + "/15/" + currentYear;
+//		}
+//		else
+//		{
 			budgetEndDate = currentMonth + "/" + lengthOfMonth + "/" + currentYear;
-		}
-		
+//		}
+//		
 		return budgetEndDate;	
 	}
 	

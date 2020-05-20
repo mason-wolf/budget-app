@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.mysql.cj.xdevapi.Statement;
 import com.projectbudget.budgetapp.model.Account;
 import com.projectbudget.budgetapp.model.Budget;
 import com.projectbudget.budgetapp.model.BudgetStatus;
@@ -154,7 +156,7 @@ public class AccountJdbc implements AccountDao{
 	public void addBudgetItem(String username, Budget budgetItem) {
 		String categoryQuery = "select title from budgetCategories where id=?";
 		String category = jdbcTemplateObject.queryForObject(categoryQuery, new Object[] { budgetItem.getBudgetId() }, String.class);
-		String budgetItemQuery = "select id from budgets where category = ? and owner = ?";
+		String budgetItemQuery = "select id from budgets where category = ? and owner = ? and archived=0";
 		
 		int budgetId;
 		
@@ -226,6 +228,23 @@ public class AccountJdbc implements AccountDao{
 	public void deleteTransasction(int transactionId) {
 		String query = "delete from transactions where id = ?";
 		jdbcTemplateObject.update(query, transactionId);
+	}
+
+	@Override
+	public void archiveAccount(Account account) {
+		
+		String oldDate = account.getBudgetStartDate();
+		LocalDate currentDate = LocalDate.now();
+		int currentMonth = currentDate.getMonthValue();
+		int currentYear = currentDate.getYear();	
+		String budgetStartDate = currentMonth + "/01/" + currentYear;
+		
+		System.out.println(oldDate);
+		String accountQuery = "update accounts set budgetStartDate = ? where accountOwner = ?";
+		String budgetQuery = "update budgets set archived=1 where owner = ? and startDate = ?";
+		jdbcTemplateObject.update(accountQuery, budgetStartDate, account.getAccountOwner());
+		jdbcTemplateObject.update(budgetQuery, account.getAccountOwner(), oldDate);
+		
 	}
 
 

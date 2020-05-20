@@ -11,12 +11,13 @@
  
   
   <!--  Remaining Funds -->
-  <div class="col-4" style="padding:1px;text-align:center;">
+  <div class="col-6" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
         <h2>Remaining Funds</h2>
         <div class="money" style="margin-top:25px;"><p th:text="${balance}"></div> 
         <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
         <a href='#' onclick="document.getElementById('AddIncome').style.display='block'">Add Income</a>
+        </br><a href="/AccountActivity">View Account Activity</a>
         </div>
     </div>
 </div>
@@ -44,7 +45,7 @@
     </div>
 </div>
 
-<!--  Projected Savings -->
+<!--  Projected Savings 
 <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
         <h2>Projected Savings</h2>
@@ -55,11 +56,12 @@
         </div>
     </div>
 </div>
+-->
 
  <!--  Total Budget -->
-<div class="col-4" style="padding:1px;text-align:center;">
+<div class="col-6" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
-        <h2>Total Budget</h2>
+        <h2>Projected Spending</h2>
             <div class='money' style='margin-top:25px;'><p th:text="${projectedSpending}"></p></div>
                     <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
         <a href="/ManageBudget">Manage Budget</a>
@@ -74,13 +76,13 @@
 <!-- Projected Spending -->
 
    <div class = "col-12"  th:if="${noBudget}">
-	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
+	      <h2 style="margin-bottom:15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
    			<div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No projected expenses. </br><a href="/ManageBudget">Manage Budget</a></div>
    	</div>
    	
    
    	   <div class = "col-12" style="margin-top:30px;" th:if="${budgetStatus}">
-	      <h2 style="margin-bottom:15px;">Projected Spending</h2>
+	      <h2 style="margin-bottom:15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
 	        
 
      <div th:each="item : ${budgetStatus}">
@@ -132,7 +134,7 @@
 
      
      <div class="col-12" style="padding:0px;margin-top:35px;margin-bottom:100px;">
-          <h2 style="margin-bottom:25px;">Budget</h2>
+          <h2 style="margin-bottom:25px;"></h2>
 	        <table>
 	          <tr>
 	            <th>Category</th>
