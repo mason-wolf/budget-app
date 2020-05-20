@@ -199,14 +199,11 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<BudgetStatus> getbudgetStatus(String username) {
 
-		String query = "select budgets.category, sum(transactions.amount) as budgetSpent, budgets.amount as budgetAmount from budgets left outer join transactions\r\n" + 
-				"on budgets.category = transactions.category where budgets.owner = ? group by budgets.category\r\n" + 
-				"UNION\r\n" + 
-				"select transactions.category, sum(transactions.amount) as budgetSpent, \r\n" + 
-				"budgets.amount as budgetAmount from transactions left outer join budgets on transactions.category = budgets.category \r\n" + 
-				"where transactions.owner = ?\r\n and budgets.category != 'Income' " + 
-				"group by transactions.category";
-		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username, username }, new BudgetStatusMapper());
+		String query = "select budgets.category , sum(transactions.amount) as budgetSpent, budgets.amount as budgetAmount from budgets \n" + 
+				"left join\n" + 
+				"transactions on budgets.category = transactions.category where budgets.owner = ? and budgets.archived = 0 \n" + 
+				"group by budgets.category";
+		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username }, new BudgetStatusMapper());
 		return budgetStatus;
 	}
 
