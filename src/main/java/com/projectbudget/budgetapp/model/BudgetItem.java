@@ -1,6 +1,6 @@
 package com.projectbudget.budgetapp.model;
 
-public class Budget {
+public class BudgetItem {
 
 	private int budgetId;
 	private String owner;

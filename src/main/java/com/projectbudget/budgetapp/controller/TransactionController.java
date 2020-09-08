@@ -75,7 +75,7 @@ public class TransactionController {
 		double currentBalance = account.getBalance();
 		double newBalance = currentBalance - expense;
 		
-		AccountJdbc.query.updateBalance(currentUser(), newBalance);
+	//	AccountJdbc.query.updateBalance(currentUser(), newBalance);
 
 		transaction.setIncome(newBalance);
 		

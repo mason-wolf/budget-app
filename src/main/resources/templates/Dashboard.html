@@ -7,17 +7,16 @@
 
 <div class="col-12" style="padding:0px;">
 
-  <div class="col-7 center shadow" style="padding:1em;">
+  <div class="col-6 center shadow" style="padding:1em;">
  
   
   <!--  Remaining Funds -->
-  <div class="col-6" style="padding:1px;text-align:center;">
+  <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
-        <h2>Remaining Funds</h2>
-        <div class="money" style="margin-top:25px;"><p th:text="${balance}"></div> 
+        <h2>Income</h2>
+        <div class="money" style="margin-top:25px;"><p th:text="${income}"></div> 
         <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
         <a href='#' onclick="document.getElementById('AddIncome').style.display='block'">Add Income</a>
-        </br><a href="/AccountActivity">View Account Activity</a>
         </div>
     </div>
 </div>
@@ -45,24 +44,24 @@
     </div>
 </div>
 
-<!--  Projected Savings 
+
 <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
-        <h2>Projected Savings</h2>
+        <h2>Total Spent</h2>
 
-        <div class='money' style='margin-top:25px;'><p th:text="${projectedSavings}"></p></div>
+        <div class='money' style='margin-top:25px;'><p th:text="${totalSpent}"></p></div>
         <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
-        <a href="/AccountActivity">Manage Account</a>
+        <a href="/AccountActivity">View Account Activity</a>
         </div>
     </div>
 </div>
--->
+
 
  <!--  Total Budget -->
-<div class="col-6" style="padding:1px;text-align:center;">
+<div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
-        <h2>Projected Spending</h2>
-            <div class='money' style='margin-top:25px;'><p th:text="${projectedSpending}"></p></div>
+        <h2>Remaining</h2>
+            <div class='money' style='margin-top:25px;'><p th:text="${remainingFunds}"></p></div>
                     <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
         <a href="/ManageBudget">Manage Budget</a>
         </div>
@@ -112,7 +111,7 @@
                                    		
 	                                		if (budgetList[i].percentageSpent > 75)
 	                                		{
-	                                			newItem.style.backgroundColor = "#e9ff40";
+	                                			newItem.style.backgroundColor = "#e0e036";
 	                                		}
 
                             			}
@@ -128,18 +127,18 @@
                             	}
      </script>  
      
+     <div class="col-12" th:if="${otherSpent}">
+     <p style="float:left;">Other</p><p th:text="${otherSpent}" style="float: right;">
+     </div>
+     
     <div class="col-2" style="float:right;padding:0px;margin-top:35px;">   
           <input type="button" href="@{/AddIncome}" onclick="location.href='AddExpense'" value="Add Expense" class="button">
         </div>
-
-     
+<!--  
      <div class="col-12" style="padding:0px;margin-top:35px;margin-bottom:100px;">
-          <h2 style="margin-bottom:25px;"></h2>
-	        <table>
+	        <table class="budgetProgress">
 	          <tr>
-	            <th>Category</th>
-	            <th>Budget</th>
-	            <th>Spent</th>
+
 	            <tr>
 	            <td th:switch="${#lists.size(budgetStatus)}">
 	            		<span th:case="*">
@@ -164,6 +163,17 @@
 	        </table>
 	       </div>
    	 </div>
-   	
-</div>
+-->
+   	 <div class="col-12" style="margin-top:15px;">
+   	 <h2>Budget History</h2>
+   	 <div class="col-6" style="margin-left:-18px;">
+   	    	 <select class="field">
+   	    	 	<option>April 2020</option>
+   	    	 </select></br></br>
+   	    	  <div class="col-3" style="margin-right:-20px; float:right;">
+   	    	    <input type="submit" class="button" value="View" > 
+   	    	  </div>
+   	    	 </div>
+   	 </div>
+   	 </div>
 </div>

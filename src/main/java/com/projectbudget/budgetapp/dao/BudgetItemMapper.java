@@ -3,14 +3,14 @@ package com.projectbudget.budgetapp.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
-import com.projectbudget.budgetapp.model.Budget;
+import com.projectbudget.budgetapp.model.BudgetItem;
 
-public class BudgetMapper implements RowMapper<Budget>{
+public class BudgetItemMapper implements RowMapper<BudgetItem>{
 
 	@Override
-	public Budget mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public BudgetItem mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-		Budget budget = new Budget();
+		BudgetItem budget = new BudgetItem();
 		budget.setBudgetId(rs.getInt("id"));
 		budget.setOwner(rs.getString("owner"));
 		budget.setCategory(rs.getString("category"));

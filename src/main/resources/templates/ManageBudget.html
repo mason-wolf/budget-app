@@ -117,24 +117,6 @@
                 </form>
             </div>
 
-            <div class="col-6" style="padding:10px;margin-top:40px;margin-bottom:15px;">
-            <h2>Budget History</h2>
-            <!--  
-                <?php
-                    $budgetHistoryQuery = mysqli_query($connection, "select distinct startDate, endDate from budgets where owner='" . $user . "' and archived='true'");
-                    if(mysqli_num_rows($budgetHistoryQuery) == 0) {
-                        echo "<div style='border:1px solid #ddd;padding:1em;text-align:center;margin-top:25px;height:190px;'>Budget archive empty.</div>";
-                    }
-                    else {
-                        echo "<div class='col-12' style='border:1px solid #ddd;padding:1em;text-align:center;margin-top:50px;'>";
-                        while($budgetHistory = mysqli_fetch_assoc($budgetHistoryQuery)) {
-                            echo "<a href='#'>" . date("F Y", strtotime( $budgetHistory['startDate'])) . "</a></br>";
-                        }
-                        echo "</div>";
-                    }
-                ?>
-                -->
-            </div>
         </div>
     </div>
 </div>

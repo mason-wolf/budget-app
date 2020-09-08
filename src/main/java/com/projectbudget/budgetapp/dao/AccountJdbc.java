@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.mysql.cj.xdevapi.Statement;
 import com.projectbudget.budgetapp.model.Account;
-import com.projectbudget.budgetapp.model.Budget;
+import com.projectbudget.budgetapp.model.BudgetItem;
 import com.projectbudget.budgetapp.model.BudgetStatus;
 import com.projectbudget.budgetapp.model.Category;
 import com.projectbudget.budgetapp.model.Transaction;
@@ -70,13 +70,13 @@ public class AccountJdbc implements AccountDao{
 	}
 
 	@Override
-	public List<Budget> getBudgetByCategory(String username) {
+	public List<BudgetItem> getBudgetByCategory(String username) {
 		
 		String query = "select * from budgets where owner = ? and archived = 0 group by category";
-		List<Budget> budget;
+		List<BudgetItem> budget;
 		
 		try {
-		budget = jdbcTemplateObject.query(query,  new Object[] { username }, new BudgetMapper());
+		budget = jdbcTemplateObject.query(query,  new Object[] { username }, new BudgetItemMapper());
 		}
 		catch (Exception e)
 		{
@@ -147,13 +147,13 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<Transaction> getTotalSpentByCategory(String username) {
 
-		String query = "select id, owner, archived, date, category, account, sum(amount) as amount from transactions where owner= ? and archived='0' group by category order by category";
+		String query = "select id, owner, archived, date, category, account, sum(amount) as amount from transactions where owner= ? and archived='0' and category != 'income' group by category order by category";
 		List<Transaction> transactions = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
 		return transactions;
 	}
 
 	@Override
-	public void addBudgetItem(String username, Budget budgetItem) {
+	public void addBudgetItem(String username, BudgetItem budgetItem) {
 		String categoryQuery = "select title from budgetCategories where id=?";
 		String category = jdbcTemplateObject.queryForObject(categoryQuery, new Object[] { budgetItem.getBudgetId() }, String.class);
 		String budgetItemQuery = "select id from budgets where category = ? and owner = ? and archived=0";
@@ -177,10 +177,10 @@ public class AccountJdbc implements AccountDao{
 	}
 
 	@Override
-	public List<Budget> getTotalBudgeted(String username) {
+	public List<BudgetItem> getTotalBudgeted(String username) {
 		
 		String query = "select id, owner, category, archived, startDate, endDate, sum(amount) as amount from budgets where owner = ? and archived = '0' group by category";
-		List<Budget> budgetItemTotals = jdbcTemplateObject.query(query, new Object[] { username }, new  BudgetMapper());
+		List<BudgetItem> budgetItemTotals = jdbcTemplateObject.query(query, new Object[] { username }, new  BudgetItemMapper());
 		return budgetItemTotals;
 		
 	}
@@ -190,16 +190,16 @@ public class AccountJdbc implements AccountDao{
 		String categoryQuery = "select category from budgets where id = ?";
 		String category = jdbcTemplateObject.queryForObject(categoryQuery, new Object[] { budgetId }, String.class);
 		String matchingCategories = "select * from budgets where category = ?";
-		List<Budget> budgetItems = jdbcTemplateObject.query(matchingCategories, new Object[] { category }, new BudgetMapper());
+		List<BudgetItem> budgetItems = jdbcTemplateObject.query(matchingCategories, new Object[] { category }, new BudgetItemMapper());
 		
-		for (Budget budgetItem : budgetItems)
+		for (BudgetItem budgetItem : budgetItems)
 		{
 			jdbcTemplateObject.update("delete from budgets where id= ? and archived = '0'", budgetItem.getBudgetId());
 		}
 	}
 
 	@Override
-	public List<BudgetStatus> getbudgetStatus(String username) {
+	public List<BudgetStatus> getBudgetStatus(String username) {
 
 		String query = "select budgets.category , sum(transactions.amount) as budgetSpent, budgets.amount as budgetAmount from budgets \n" + 
 				"left join\n" + 
@@ -239,12 +239,38 @@ public class AccountJdbc implements AccountDao{
 		int currentYear = currentDate.getYear();	
 		String budgetStartDate = currentMonth + "/01/" + currentYear;
 		
-		System.out.println(oldDate);
 		String accountQuery = "update accounts set budgetStartDate = ? where accountOwner = ?";
 		String budgetQuery = "update budgets set archived=1 where owner = ? and startDate = ?";
 		jdbcTemplateObject.update(accountQuery, budgetStartDate, account.getAccountOwner());
 		jdbcTemplateObject.update(budgetQuery, account.getAccountOwner(), oldDate);
 		
+	}
+
+	@Override
+	public Double getTotalNotBudgeted(String username) {
+		
+		String budgetQuery = "select sum(transactions.amount) from transactions left join budgets on transactions.category = budgets.category \n" + 
+				"where budgets.category IS NULL and transactions.category != \"Income\" and transactions.owner=? and transactions.archived = 0;";
+		double result = 0 ;
+		
+		try 
+		{
+		result = jdbcTemplateObject.queryForObject(budgetQuery, new Object[] { username }, Double.class);
+		}
+		catch(Exception e)
+		{
+			result = 0;
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<BudgetItem> getBudgetArchive(String username) {
+		
+		String budgetQuery = "select * from budgets where archived=1 and owner = ?";
+		List<BudgetItem> archivedBudgetList = jdbcTemplateObject.query(budgetQuery, new Object[] { username }, new  BudgetItemMapper());
+		return archivedBudgetList;
 	}
 
 

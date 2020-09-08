@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.model.Account;
-import com.projectbudget.budgetapp.model.Budget;
+import com.projectbudget.budgetapp.model.BudgetItem;
 import com.projectbudget.budgetapp.model.Category;
 
 @Controller
@@ -36,13 +36,13 @@ public class BudgetManagerController {
 	public void populateBudget(Model model)
 	{
 		// Checks if the user has any active budget items.
-		List<Budget> budgetItems = AccountJdbc.query.getBudgetByCategory(currentUser());
+		List<BudgetItem> budgetItems = AccountJdbc.query.getBudgetByCategory(currentUser());
 		
 		// Retrieves all user categories for category management.
 		List<Category> budgetCategories = AccountJdbc.query.getBudgetCategories(currentUser());
 		
 		// Get total budget for each category.
-		List<Budget> budgetTotals = AccountJdbc.query.getTotalBudgeted(currentUser());
+		List<BudgetItem> budgetTotals = AccountJdbc.query.getTotalBudgeted(currentUser());
 		
 		double totalBudget = 0;
 		double projectedSavings = 0;
@@ -56,7 +56,7 @@ public class BudgetManagerController {
 		}
 		else
 		{
-			for (Budget budget : budgetTotals)
+			for (BudgetItem budget : budgetTotals)
 			{
 				totalBudget += budget.getAmount();
 			}
@@ -76,28 +76,35 @@ public class BudgetManagerController {
 	@RequestMapping(value = "/ManageBudget", method = RequestMethod.POST)
 	public String addProjectedExpense(@RequestParam("amount") String amount, Model model, @Valid String category)
 	{
-		double budgetAmount = Double.parseDouble(amount);
-		
-
-			Budget newBudgetItem = new Budget();
-			newBudgetItem.setOwner(currentUser());
-			newBudgetItem.setAmount(budgetAmount);
-			newBudgetItem.setStartDate(budgetStartDate());
-			newBudgetItem.setEndDate(budgetEndDate());
-			newBudgetItem.setArchived(false);
-
-			List<Category> categoryList = AccountJdbc.query.getBudgetCategories(currentUser());
-			
-			for (Category c : categoryList)
+			try 
 			{
-				if (c.getTitle().contains(category))
+				double budgetAmount = Double.parseDouble(amount);
+					
+				BudgetItem newBudgetItem = new BudgetItem();
+				newBudgetItem.setOwner(currentUser());
+				newBudgetItem.setAmount(budgetAmount);
+				newBudgetItem.setStartDate(budgetStartDate());
+				newBudgetItem.setEndDate(budgetEndDate());
+				newBudgetItem.setArchived(false);
+	
+				List<Category> categoryList = AccountJdbc.query.getBudgetCategories(currentUser());
+				
+				for (Category c : categoryList)
 				{
-					newBudgetItem.setBudgetId(c.getCategoryId());
+					if (c.getTitle().contains(category))
+					{
+						newBudgetItem.setBudgetId(c.getCategoryId());
+					}
 				}
+				
+				AccountJdbc.query.addBudgetItem(currentUser(), newBudgetItem);
+				}
+			
+			catch (Exception e)
+			{
+				model.addAttribute("invalidAmount", "Please enter a valid amount.");
 			}
 			
-			AccountJdbc.query.addBudgetItem(currentUser(), newBudgetItem);
-
 		populateBudget(model);
 		return "ManageBudget";
 	}

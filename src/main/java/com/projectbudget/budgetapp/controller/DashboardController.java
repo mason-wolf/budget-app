@@ -1,6 +1,7 @@
 package com.projectbudget.budgetapp.controller;
 
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -22,13 +22,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.dao.UserJdbc;
 import com.projectbudget.budgetapp.model.Account;
-import com.projectbudget.budgetapp.model.Budget;
+import com.projectbudget.budgetapp.model.BudgetItem;
 import com.projectbudget.budgetapp.model.BudgetStatus;
 import com.projectbudget.budgetapp.model.Transaction;
 
@@ -52,6 +49,16 @@ public class DashboardController {
 		account.setAccountType(accountType);
 		account.setBalance(Double.parseDouble(balance));
 		
+		// Create a new transaction to track income history.
+		Transaction transaction = new Transaction();
+		transaction.setOwner(currentUser());
+		transaction.setDate(dateFormatter(dateRecieved));
+		transaction.setAmount(Double.parseDouble(balance));
+		transaction.setCategory("Income");
+		
+		AccountJdbc.query.addTransaction(transaction);
+		
+		// Format and update the account budget date.
 		LocalDate currentDate = LocalDate.now();
 		int currentMonth = currentDate.getMonthValue();
 		int currentDay = currentDate.getDayOfMonth();
@@ -61,6 +68,7 @@ public class DashboardController {
 		account.setBudgetStartDate(budgetDate);
 		account.isPrimary(true);
 
+		// Create default budget categories for the user.
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Auto & Transport");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Food & Dining");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Entertainment");
@@ -85,7 +93,7 @@ public class DashboardController {
 		// Create a new transaction to track income history.
 		Transaction transaction = new Transaction();
 		transaction.setOwner(currentUser());
-		transaction.setDate(date);
+		transaction.setDate(dateFormatter(date));
 		transaction.setAmount(Double.parseDouble(amount));
 		transaction.setCategory("Income");
 		AccountJdbc.query.addTransaction(transaction);
@@ -93,6 +101,7 @@ public class DashboardController {
 		return "Dashboard";
 	}
 	
+	// Show a list of recent transactions.
 	@RequestMapping(value = "/AccountActivity", method = RequestMethod.GET)
 	public String viewTransactions(Model model)
 	{
@@ -109,13 +118,15 @@ public class DashboardController {
 		return "AccountActivity";
 	}
 	
+	// Remove a transaction.
 	@RequestMapping(value = "RemoveTransaction/{transactionId}", method = RequestMethod.GET)
 	public String removeExpense(@PathVariable(value="transactionId") Integer transactionId, Model model) throws Exception {
 
-		// If the transaction is a source of income and the user removes it, update the account balance.
+
 		Account account = AccountJdbc.query.getAccount(currentUser());
 		Transaction transaction = AccountJdbc.query.getTransaction(transactionId);
 		
+		// If the transaction is a source of income and the user removes it, update the account balance.		
 		if (transaction.getCategory().contains("Income"))
 		{
 			double currentBalance = account.getBalance();
@@ -155,45 +166,75 @@ public class DashboardController {
 		String currentMonth = currentDate.getMonth().toString().toLowerCase();
 		String budgetTimeFrame = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1);
 		
+		// Retrieve the user's transaction list.
+		List<Transaction> transactionList = AccountJdbc.query.getTotalSpentByCategory(currentUser());
+		
+		
+		// If a new month has lapsed, archive the previous month's budget.
 		if (budgetLapsed(account))
 		{
 			AccountJdbc.query.archiveAccount(account);
+			
+			double totalSpent = 0;
+			
+			// Calculate total spent last month.
+			for (Transaction t : transactionList)
+			{
+				totalSpent += t.getAmount();
+			}
+			
+			// Update the account balance with last month's remaining funds.
+			AccountJdbc.query.updateBalance(currentUser(), account.getBalance() - totalSpent);
+			account.setBalance(account.getBalance() - totalSpent);
 		}
 		
 		// Retrieve the user's budget list.
-		List<Budget> budgetList = AccountJdbc.query.getBudgetByCategory(currentUser());
-		
-		double totalBudget = 0;
+		List<BudgetItem> budgetList = AccountJdbc.query.getBudgetByCategory(currentUser());
+			
+		// Get total spent and other spent that was not on the budget.
+
+		double totalSpent = 0;
+		double otherSpent = AccountJdbc.query.getTotalNotBudgeted(currentUser());
+
 		
 		if (budgetList.size() == 0)
 		{
-			totalBudget = 0;
 			model.addAttribute("noBudget" , "No budget");
 		}
 		else
 		{
-			for (Budget budgetItem : budgetList)
+			// Calculate total spent this month.
+			for (Transaction t : transactionList)
 			{
-				totalBudget += budgetItem.getAmount();
+				totalSpent += t.getAmount();
 			}
+			
 		}
 		
-		double projectedSavings = account.getBalance() - totalBudget;
+		DecimalFormat dFormat = new DecimalFormat("0.00");
+
+		double remainingFunds = account.getBalance() - totalSpent;
 		
 		// Budget alloted and spent: compares budget items with transactions
-		List<BudgetStatus> budgetStatusItems = AccountJdbc.query.getbudgetStatus(currentUser());
+		List<BudgetStatus> budgetStatusItems = AccountJdbc.query.getBudgetStatus(currentUser());
 		List<Transaction> transactionHistory = AccountJdbc.query.getTransactionHistory(currentUser());
 		
- 		model.addAttribute("balance", "$" + account.getBalance());
-		model.addAttribute("projectedSavings", "$" + projectedSavings);
-		model.addAttribute("projectedSpending", "$" + totalBudget);
-		
+ 		model.addAttribute("income", "$" + dFormat.format(account.getBalance()));
+ 		model.addAttribute("totalSpent", "$" + dFormat.format(totalSpent));
+ 		model.addAttribute("remainingFunds", "$" + dFormat.format(remainingFunds));
 
+ 		// If transactions exist that aren't on the budget, show them.
+ 		if (otherSpent != 0)
+ 		{
+	 		model.addAttribute("otherSpent", "$" + dFormat.format(otherSpent));
+ 		}
+ 		
 		if (transactionHistory.size() != 0)
 		{
 			model.addAttribute("transactionHistory", transactionHistory);
 		}
-
+		
+		// Show budget activity if a budget exists.
 		if (budgetList.size() == 0)
 		{
 			model.addAttribute("noAccountActivity", "No account activity.");
@@ -204,12 +245,32 @@ public class DashboardController {
 		}
 		
 		model.addAttribute("budgetTimeFrame", budgetTimeFrame);
+		
+
+		List<BudgetItem> budgetArchive = AccountJdbc.query.getBudgetArchive(currentUser());
+		List<String> dateList = new ArrayList<String>();
+		
+		for (BudgetItem b : budgetArchive)
+		{
+			if (b.getArchived())
+			{
+				if (!dateList.contains(b.getStartDate()))
+				{
+					dateList.add(b.getStartDate());
+				}
+			}
+		}
+		
+		for (String s : dateList)
+		{
+			System.out.println(budgetTimeframe(s));
+		}
     }
     
-	public String budgetTimeframe(Account account) throws ParseException
+    // Formats the account date into mm/dd/yyy format. Retrieves the current month.
+	public String budgetTimeframe(String budgetDate) throws ParseException
 	{
 		 SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
-		 String budgetDate = account.getBudgetStartDate();
 		 Date date = new Date();
 		 date = dateFormat.parse(budgetDate);
 		 LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -220,6 +281,20 @@ public class DashboardController {
 		return currentMonthFormatted;
 	}
 	
+	public String dateFormatter(String date) throws ParseException
+	{
+		 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		 Date dateFormatted = new Date();
+		 dateFormatted = dateFormat.parse(date);
+		 LocalDate localDate = dateFormatted.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		 
+		int month = localDate.getMonth().getValue();
+		int day = localDate.getDayOfMonth();
+		int year = localDate.getYear();
+	    date = month + "/" + day + "/" + year;
+		return date;
+	}
+	
 	// Returns true if a new month has lapsed.
 	public boolean budgetLapsed(Account account) throws ParseException
 	{
@@ -227,7 +302,7 @@ public class DashboardController {
 		
 		LocalDate currentDate = LocalDate.now();
 		String currentMonth = currentDate.getMonth().toString().toLowerCase();
-		String accountDate = budgetTimeframe(account).toString().toLowerCase();
+		String accountDate = budgetTimeframe(account.getBudgetStartDate()).toString().toLowerCase();
 
 		if (currentMonth.equals(accountDate))
 		{

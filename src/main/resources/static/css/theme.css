@@ -1,7 +1,7 @@
 html { font-family: Barlow; font-size:18px;}
-.nav { background-color: #1c4418; } 
+.nav { background-color: #0b2913; } 
 .nav-header { color:#fff; }
-.nav-toggle, .nav-dropdown { background-color:#1c4418;; color:#fff; margin:0px; padding: 0px; width:50px;}
+.nav-toggle, .nav-dropdown { background-color:#0b2913;; color:#fff; margin:0px; padding: 0px; width:50px;}
 .nav-dropdown a { color:#fff; text-decoration: none;}
 .nav-dropdown a:hover {color:#ccc;}
 .menu-vertical a { color: #000; text-decoration: none; display: block; width:100%; padding:1em; }
@@ -148,4 +148,19 @@ h2 {
     font-size: 35px;
     font-family: 'Heebo';
     font-weight: 200;
+}
+
+.budgetProgress {
+	font-weight: 300;
+    font-size: 25px;
+    font-family: heebo;
+    text-align:center;
+}
+
+.budgetProgress td 
+{
+
+	font-size: 20px;
+    font-family: heebo;
+	text-align:Center;
 }
