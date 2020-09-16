@@ -2,13 +2,37 @@
 <head lang="en" th:include="header :: header"> 
 </head>
     <title>Account Activity</title>
+    
+    <script type="text/javascript">
+    
+    	var selectedId;
+    	
+    	function confirmDelete(itemId)
+    	{
+    		document.getElementById('RemoveTransaction').style.display='block';
+ 			selectedId = itemId;
+    	}
+    	
+    	function hideModal()
+    	{
+    		document.getElementById('RemoveTransaction').style.display='none';
+    	}
+    	
+    	function deleteItem()
+    	{
+    		window.location.href="/RemoveTransaction/" + selectedId;
+    	}
+    	
+    </script>
   </head>
   <body>
   
   <div class="col-12" style="padding:0px">
     <div class="col-7 center shadow"  style="padding:0px;">
         <div class="col-12" style="padding:1em;">
-            <div class="col-12"><a href="/Dashboard">Dashboard</a></div>
+            <div class="col-12"><a href="/Dashboard">Dashboard</a>
+            <span style="margin-left:15px;margin-right:15px;">></span>
+            <a href="/AccountActivity">Account Activity</a></div>
             <div class="col-12">
                 <h2>Account Activity</h2><br>
                 
@@ -28,7 +52,7 @@
 						    <tr th:each="item : ${accountActivity}">
 							   <td><span th:text="${item.date}"></span></td>
 							   	<td><span th:text="${item.category}"></span></td>
-							   <td>$ <span th:text="${item.amount}"></span><a th:href="@{'/RemoveTransaction/' + ${item.transactionId}}" style="float:right;">remove</a></td>
+							   <td>$ <span th:text="${item.amount}"></span><a th:onclick="'confirmDelete(\'' + ${item.transactionId} + '\');'" style="float:right;">delete</a></td>
 							</tr>
 						 </table>
                 
@@ -45,18 +69,10 @@
 
             <span onclick="document.getElementById('RemoveTransaction').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
 
-<div class="col-12"><h2>Remove Transaction</h2></div>
-            <form method="post" th:action="@{/RemoveTransaction}">
-                <div class="col-4" style="margin-top:5px;">Amount:</div>
-                <div class="col-6">    
-                    <span class="currency">
-                        <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount"></span>
-                </div>
-                <div class="col-4">Date:</div>
-                <div class="col-6"><input type="date" class="field" name="date" id="date" required  value="<?php echo $today; ?>"></div></br></br>
-                <div class="col-4" style="float:right;"><input type="submit" value="Add" class="button"></div>
-            </form>
-
+<div class="col-12"><h2>Delete Transaction</h2></div>
+            	<div class="col-12">Are you sure you want to delete this transaction?</div>
+            	<div class="col-4" style="float:left;"><input type="button" onclick="hideModal()" value="Cancel" class="button"></div>
+                <div class="col-4" style="float:right;"><input type="button" onclick="deleteItem()" value="Delete" class="button"></div>
         </div>
     </div>
 </div>
