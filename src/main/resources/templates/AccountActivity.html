@@ -38,15 +38,15 @@
                 </div>
                 </div>
                 
-                <!--  Add Income modal -->
-<div id="AddIncome" class="modal">
+<!--  Remove transaction modal -->
+<div id="RemoveTransaction" class="modal">
     <div class="modal-content animate-top">
         <div class="col-12" style="background-color:#fff;padding:30px;">
 
-            <span onclick="document.getElementById('AddIncome').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
+            <span onclick="document.getElementById('RemoveTransaction').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
 
-<div class="col-12"><h2>Add Income</h2></div>
-            <form method="post" th:action="@{/AddIncome}">
+<div class="col-12"><h2>Remove Transaction</h2></div>
+            <form method="post" th:action="@{/RemoveTransaction}">
                 <div class="col-4" style="margin-top:5px;">Amount:</div>
                 <div class="col-6">    
                     <span class="currency">

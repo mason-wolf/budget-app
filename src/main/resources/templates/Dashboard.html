@@ -9,7 +9,6 @@
 
   <div class="col-6 center shadow" style="padding:1em;">
  
-  
   <!--  Remaining Funds -->
   <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
@@ -21,7 +20,7 @@
     </div>
 </div>
    
-                <!--  Add Income modal -->
+<!--  Add Income modal -->
 <div id="AddIncome" class="modal">
     <div class="modal-content animate-top">
         <div class="col-12" style="background-color:#fff;padding:30px;">
@@ -43,7 +42,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="col-4" style="padding:1px;text-align:center;">
     <div class="col-12 widget">
@@ -70,7 +68,15 @@
 
 <!--  Recent Spending -->
 
+   <div class = "col-12"  th:if="${invalidIncomeAmount}">
+   			<div class='col-12' id="hideDiv" style='background-color:#f55b5b;color:#fff;text-align:center;margin-top:10px;' >Please enter a valid income amount.</div>
+   			<script>
+   			$(function() {
+   				setTimeout(function() { $("#hideDiv").fadeOut(1500); }, 2000)
 
+   				})
+   		   </script>
+   	</div>
 	
 <!-- Projected Spending -->
 
@@ -174,6 +180,7 @@
    	    	    <input type="submit" class="button" value="View" > 
    	    	  </div>
    	    	 </div>
+   	 </div>
    	 </div>
    	 </div>
 </div>

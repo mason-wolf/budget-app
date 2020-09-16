@@ -84,19 +84,26 @@ public class DashboardController {
 	@RequestMapping(value = "/AddIncome", method = RequestMethod.POST)
 	public String addIncome(Model model, @RequestParam("amount") String amount, @RequestParam("date") String date) throws Exception {
 		
-		// Update the account balance.
-		Account account = AccountJdbc.query.getAccount(currentUser());
-		double currentBalance = account.getBalance();
-		double newBalance = currentBalance + Double.parseDouble(amount);
-		AccountJdbc.query.updateBalance(currentUser(), newBalance);	
-		
-		// Create a new transaction to track income history.
-		Transaction transaction = new Transaction();
-		transaction.setOwner(currentUser());
-		transaction.setDate(dateFormatter(date));
-		transaction.setAmount(Double.parseDouble(amount));
-		transaction.setCategory("Income");
-		AccountJdbc.query.addTransaction(transaction);
+		try
+		{
+			// Update the account balance.
+			Account account = AccountJdbc.query.getAccount(currentUser());
+			double currentBalance = account.getBalance();
+			double newBalance = currentBalance + Double.parseDouble(amount);
+			AccountJdbc.query.updateBalance(currentUser(), newBalance);	
+			
+			// Create a new transaction to track income history.
+			Transaction transaction = new Transaction();
+			transaction.setOwner(currentUser());
+			transaction.setDate(dateFormatter(date));
+			transaction.setAmount(Double.parseDouble(amount));
+			transaction.setCategory("Income");
+			AccountJdbc.query.addTransaction(transaction);
+		}
+		catch (Exception validationException)
+		{
+			model.addAttribute("invalidIncomeAmount", validationException);
+		}
 		populateDashboard(model);
 		return "Dashboard";
 	}
