@@ -70,13 +70,13 @@ public class AccountJdbc implements AccountDao{
 	}
 
 	@Override
-	public List<BudgetItem> getBudgetByCategory(String username) {
+	public List<BudgetItem> getBudgetByCategory(String username, int month, int year) {
 		
-		String query = "select * from budgets where owner = ? and archived = 0 group by category";
+		String query = "select * from budgets where owner = ? and archived = 0 and MONTH(startDate) = ? and YEAR(startDate) = ? group by category";
 		List<BudgetItem> budget;
 		
 		try {
-		budget = jdbcTemplateObject.query(query,  new Object[] { username }, new BudgetItemMapper());
+		budget = jdbcTemplateObject.query(query,  new Object[] { username, month, year}, new BudgetItemMapper());
 		}
 		catch (Exception e)
 		{
@@ -145,10 +145,10 @@ public class AccountJdbc implements AccountDao{
 	}
 
 	@Override
-	public List<Transaction> getTotalSpentByCategory(String username) {
-
-		String query = "select id, owner, archived, date, category, account, sum(amount) as amount from transactions where owner= ? and archived='0' and category != 'income' group by category order by category";
-		List<Transaction> transactions = jdbcTemplateObject.query(query, new Object[] { username }, new TransactionMapper());
+	public List<Transaction> getTotalSpentByCategory(String username, int month, int year) {
+		String query = "select id, owner, archived, date, category, account, sum(amount) as amount from transactions where owner= ? "
+				+ "and archived='0' and category != 'income' and MONTH(date) =? and YEAR(date) = ? group by category order by category";
+		List<Transaction> transactions = jdbcTemplateObject.query(query, new Object[] { username, month, year }, new TransactionMapper());
 		return transactions;
 	}
 
@@ -164,13 +164,11 @@ public class AccountJdbc implements AccountDao{
 		{
 			// If the projected expense already exists, update the budget amount.
 			budgetId = jdbcTemplateObject.queryForObject(budgetItemQuery, new Object[] { category, username }, Integer.class);
-			System.out.println(budgetId);
 			String updateBudgetQuery = "update budgets set amount = ? where id = ? and owner=?";
 			jdbcTemplateObject.update(updateBudgetQuery, budgetItem.getAmount(), budgetId, username);
 		}
 		catch(Exception e)
 		{
-			System.out.println(e);
 			String query = "insert into budgets (owner, category, archived, startDate, endDate, amount) values (?, ?, ?, ?, ?, ?)";
 			jdbcTemplateObject.update(query, username, category, budgetItem.getArchived(), budgetItem.getStartDate(), budgetItem.getEndDate(), budgetItem.getAmount());
 		}
@@ -201,10 +199,11 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<BudgetStatus> getBudgetStatus(String username) {
 
-		String query = "select budgets.category , sum(transactions.amount) as budgetSpent, budgets.amount as budgetAmount from budgets \n" + 
-				"left join\n" + 
-				"transactions on budgets.category = transactions.category where budgets.owner = ? and budgets.archived = 0 \n" + 
-				"group by budgets.category";
+		String query = "select budgets.category , sum(case when transactions.archived = 0 THEN transactions.amount else 0 END) as budgetSpent, budgets.amount as budgetAmount from budgets  \n" + 
+				"				left join\n" + 
+				"				transactions on budgets.category = transactions.category\n" + 
+				"                where budgets.owner = ? and budgets.archived = 0\n" + 
+				"				group by budgets.category";
 		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username }, new BudgetStatusMapper());
 		return budgetStatus;
 	}
@@ -233,17 +232,17 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public void archiveAccount(Account account) {
 		
-		String oldDate = account.getBudgetStartDate();
 		LocalDate currentDate = LocalDate.now();
-		int currentMonth = currentDate.getMonthValue();
-		int currentYear = currentDate.getYear();	
-		String budgetStartDate = currentMonth + "/01/" + currentYear;
-		
 		String accountQuery = "update accounts set budgetStartDate = ? where accountOwner = ?";
-		String budgetQuery = "update budgets set archived=1 where owner = ? and startDate = ?";
-		jdbcTemplateObject.update(accountQuery, budgetStartDate, account.getAccountOwner());
-		jdbcTemplateObject.update(budgetQuery, account.getAccountOwner(), oldDate);
-		
+		String budgetQuery = "update budgets set archived=1 where owner = ?";
+		String transactionQuery = "update transactions set archived=1 where owner = ?";
+				
+		// Update the user's account to reflect the new month, new budget.
+		jdbcTemplateObject.update(accountQuery, currentDate, account.getAccountOwner());
+		// Archive the budgeted items
+		jdbcTemplateObject.update(budgetQuery, account.getAccountOwner());
+		// Archive the transactions from last month
+		jdbcTemplateObject.update(transactionQuery, account.getAccountOwner());
 	}
 
 	@Override

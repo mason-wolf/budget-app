@@ -17,7 +17,7 @@ public interface AccountDao {
 	public void addTransaction(Transaction transaction);
 	public void addBudgetItem(String username, BudgetItem budgetItem);
 	public void deleteBudgetItem(int budgetId);
-	public List<BudgetItem> getBudgetByCategory(String username);
+	public List<BudgetItem> getBudgetByCategory(String username, int month, int year);
 	public List<BudgetItem> getTotalBudgeted(String username);
 	public List<BudgetItem> getBudgetArchive(String username);
 	public Double getTotalNotBudgeted(String username);
@@ -25,7 +25,7 @@ public interface AccountDao {
 	public void deleteTransasction(int transactionId);
 	public List<Transaction> getTransactionHistory(String username);
 	public List<Transaction> getTransactionsByCategory(String username);
-	public List<Transaction> getTotalSpentByCategory(String username);
+	public List<Transaction> getTotalSpentByCategory(String username, int month, int year);
 	public List<Category> getBudgetCategories(String username);
 	public List<BudgetStatus> getBudgetStatus(String username);
 	public void addTransactionCategory(String username, String categoryTitle);

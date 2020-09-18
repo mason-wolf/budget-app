@@ -1,8 +1,14 @@
 package com.projectbudget.budgetapp.controller;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
-
+import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -36,17 +42,14 @@ public class TransactionController {
 	}
 	
 	@RequestMapping(value = "/AddExpense", method = RequestMethod.POST)
-	public String addExpense(@RequestParam("amount") String amount, Model model, @Valid String category, @RequestParam("date") String date)
+	public String addExpense(@RequestParam("amount") String amount, Model model, @Valid String category, @RequestParam("date") String date) throws ParseException
 	{
-		
 		if (date == "")
 		{
 			LocalDate currentDate = LocalDate.now();
-			int currentMonth = currentDate.getMonthValue();
-			int currentDay = currentDate.getDayOfMonth();
-			int currentYear = currentDate.getYear();
-			date = currentMonth + "/" + currentDay + "/" + currentYear;
+			date = currentDate.toString();
 		}
+		
 		double expense = 0;
 		
 		try 
@@ -69,13 +72,14 @@ public class TransactionController {
 		transaction.setOwner(currentUser());
 		transaction.setAccount(account.getAccountName());
 		transaction.setCategory(categoryTitle);
-		transaction.setDate(date);
-		transaction.setAmount(expense);
 		
+		transaction.setDate(date);
+		
+		transaction.setAmount(expense);		
 		double currentBalance = account.getBalance();
 		double newBalance = currentBalance - expense;
 		
-	//	AccountJdbc.query.updateBalance(currentUser(), newBalance);
+		AccountJdbc.query.updateBalance(currentUser(), newBalance);
 
 		transaction.setIncome(newBalance);
 		
@@ -100,6 +104,18 @@ public class TransactionController {
 		return "AddExpense";
 	}
 	
+    // Formats the account date into mm/dd/yyy format. Retrieves the current month.
+	public String budgetTimeframe(String budgetDate) throws ParseException
+	{
+		 SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+		 Date date = new Date();
+		 date = dateFormat.parse(budgetDate);
+		 LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		String currentMonth = localDate.getMonth().toString();
+		String currentMonthLowerCase = currentMonth.toLowerCase();
+		String currentMonthFormatted = currentMonthLowerCase.substring(0, 1).toUpperCase() + currentMonthLowerCase.substring(1);
+		return currentMonthFormatted;
+	}
 	
 	public void showAccountDetails(Model model)
 	{

@@ -36,7 +36,8 @@ public class BudgetManagerController {
 	public void populateBudget(Model model)
 	{
 		// Checks if the user has any active budget items.
-		List<BudgetItem> budgetItems = AccountJdbc.query.getBudgetByCategory(currentUser());
+		List<BudgetItem> budgetItems = AccountJdbc.query.getBudgetByCategory(currentUser(), DashboardController.selectedBudgetMonth,
+				DashboardController.selectedBudgetYear);
 		
 		// Retrieves all user categories for category management.
 		List<Category> budgetCategories = AccountJdbc.query.getBudgetCategories(currentUser());
@@ -83,8 +84,7 @@ public class BudgetManagerController {
 				BudgetItem newBudgetItem = new BudgetItem();
 				newBudgetItem.setOwner(currentUser());
 				newBudgetItem.setAmount(budgetAmount);
-				newBudgetItem.setStartDate(budgetStartDate());
-				newBudgetItem.setEndDate(budgetEndDate());
+				newBudgetItem.setStartDate(LocalDate.now().toString());
 				newBudgetItem.setArchived(false);
 	
 				List<Category> categoryList = AccountJdbc.query.getBudgetCategories(currentUser());
