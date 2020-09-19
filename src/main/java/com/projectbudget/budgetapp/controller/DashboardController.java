@@ -5,8 +5,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -50,11 +54,11 @@ public class DashboardController {
 		// Create a new transaction to track income history.
 		Transaction transaction = new Transaction();
 		transaction.setOwner(currentUser());
-		transaction.setDate(dateFormatter(dateRecieved));
+		transaction.setDate(getBudgetMonthYear(dateRecieved));
 		transaction.setAmount(Double.parseDouble(balance));
 		transaction.setCategory("Income");
 		
-		AccountJdbc.query.addTransaction(transaction);
+		AccountJdbc.query.addTransaction(transaction, false);
 		
 		// Format and update the account budget date.
 		LocalDate currentDate = LocalDate.now();
@@ -91,7 +95,18 @@ public class DashboardController {
 			transaction.setDate(date);
 			transaction.setAmount(Double.parseDouble(amount));
 			transaction.setCategory("Income");
-			AccountJdbc.query.addTransaction(transaction);
+			
+			// Determine if the date has lapsed for this transaction,
+			// if it's part of an older budget, archive the transaction.
+			if (monthLapsed(date))
+			{
+				AccountJdbc.query.addTransaction(transaction, true);
+			}
+			else
+			{
+				AccountJdbc.query.addTransaction(transaction, false);
+			}
+
 		}
 		catch (Exception validationException)
 		{
@@ -160,6 +175,12 @@ public class DashboardController {
     	}
     }
     
+	@RequestMapping(value = "/Dashboard", method = RequestMethod.POST)
+	public String showArchivedBudget(@RequestParam("budgetMonthYear") String budget, Model model)
+	{	
+		return "BudgetHistory";
+	}
+	
     public void populateDashboard(Model model) throws ParseException 
     {
 
@@ -170,7 +191,7 @@ public class DashboardController {
 		List<Transaction> transactionList = AccountJdbc.query.getTotalSpentByCategory(currentUser(), selectedBudgetMonth, selectedBudgetYear);
 			
 		// If a new month has lapsed, archive the previous month's budget.
-		if (budgetLapsed(account))
+		if (monthLapsed(account))
 		{
 			AccountJdbc.query.archiveAccount(account);
 		}
@@ -241,61 +262,81 @@ public class DashboardController {
 		List<BudgetItem> budgetArchive = AccountJdbc.query.getBudgetArchive(currentUser());
 		List<String> dateList = new ArrayList<String>();
 		
-		for (BudgetItem b : budgetArchive)
+		if (budgetArchive.size() != 0)
 		{
-			if (b.getArchived())
+			// Populate a list with budgets by month and year.
+			for (BudgetItem b : budgetArchive)
 			{
-				if (!dateList.contains(b.getStartDate()))
+				if (b.getArchived())
 				{
-					dateList.add(b.getStartDate());
+					if (!dateList.contains(b.getStartDate()))
+					{
+						dateList.add(getBudgetMonthYear(b.getStartDate()));
+					}
 				}
-			}
+			}	
+			
+			model.addAttribute("budgetArchive", dateList);
 		}		
     }
     
-    // Formats the account date into mm/dd/yyy format. Retrieves the current month.
-	public String budgetTimeframe(String budgetDate) throws ParseException
+    // Formats the account date into from yyyy-MM-dd format into the budget's month.
+	public static String getBudgetMonth(String budgetDate) throws ParseException
 	{
-		 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		 Date date = new Date();
-		 date = dateFormat.parse(budgetDate);
-		 LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		String currentMonth = localDate.getMonth().toString();
-		String currentMonthLowerCase = currentMonth.toLowerCase();
-		String currentMonthFormatted = currentMonthLowerCase.substring(0, 1).toUpperCase() + currentMonthLowerCase.substring(1);
-		// int currentYear = localDate.getYear();
-		return currentMonthFormatted;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		date = dateFormat.parse(budgetDate);
+	    LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		String month = localDate.getMonth().toString();
+		String monthLowerCase = month.toLowerCase();
+		String monthFormatted = monthLowerCase.substring(0, 1).toUpperCase() + monthLowerCase.substring(1);
+		return monthFormatted;
 	}
 	
-	public String dateFormatter(String date) throws ParseException
+	public String getBudgetMonthYear(String dateString) throws ParseException
 	{
-		 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		 Date dateFormatted = new Date();
-		 dateFormatted = dateFormat.parse(date);
-		 LocalDate localDate = dateFormatted.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		 
-		int month = localDate.getMonth().getValue();
-		int day = localDate.getDayOfMonth();
-		int year = localDate.getYear();
-	    date = month + "/" + day + "/" + year;
-		return date;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		date = dateFormat.parse(dateString);
+	    LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		String month = localDate.getMonth().toString();
+		String monthLowerCase = month.toLowerCase();
+		String monthFormatted = monthLowerCase.substring(0, 1).toUpperCase() + monthLowerCase.substring(1);
+		String dateFormatted = monthFormatted + " " + localDate.getYear();
+		return dateFormatted;
 	}
 	
-	// Returns true if a new month has lapsed.
-	public boolean budgetLapsed(Account account) throws ParseException
+	// Returns true if the month of a date has lapsed.
+	public boolean monthLapsed(Account account) throws ParseException
 	{
-		boolean budgetLapsed = true;
+		boolean budgetLapsed = false;
 		
 		LocalDate currentDate = LocalDate.now();
 		String currentMonth = currentDate.getMonth().toString().toLowerCase();
-		String accountDate = budgetTimeframe(account.getBudgetStartDate()).toString().toLowerCase();
+		String accountDate = getBudgetMonth(account.getBudgetStartDate()).toString().toLowerCase();
 
-		if (currentMonth.equals(accountDate))
+		if (!currentMonth.equals(accountDate))
 		{
-			budgetLapsed = false;
-		}
+			budgetLapsed = true;
+		}		
 		
 		return budgetLapsed;
+	}
+	
+	// Returns true if the month of a date has lapsed.
+	public static boolean monthLapsed(String date) throws ParseException
+	{
+		boolean lapsedMonth = false;
+		
+		LocalDate currentDate = LocalDate.now();
+		String currentMonth = currentDate.getMonth().toString().toLowerCase();
+
+		if (currentMonth.equals(date))
+		{
+			lapsedMonth = true;
+		}
+		
+		return lapsedMonth;
 	}
 	
     public String currentUser()

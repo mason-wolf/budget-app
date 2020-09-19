@@ -14,7 +14,7 @@ public interface AccountDao {
 	public Account getAccount(String username);
 	public void archiveAccount(Account account);
 	public void updateBalance(String username, double amount);
-	public void addTransaction(Transaction transaction);
+	public void addTransaction(Transaction transaction, boolean archived);
 	public void addBudgetItem(String username, BudgetItem budgetItem);
 	public void deleteBudgetItem(int budgetId);
 	public List<BudgetItem> getBudgetByCategory(String username, int month, int year);

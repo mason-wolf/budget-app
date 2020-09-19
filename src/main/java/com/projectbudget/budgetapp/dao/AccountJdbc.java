@@ -131,9 +131,24 @@ public class AccountJdbc implements AccountDao{
 		jdbcTemplateObject.update(query, categoryId);
 	}
 
+	/** Adds a transaction with an archive flag. True = Archived, False = Active (Not archived) 
+	 * If a transaction is not archived, it is part of the active budget or current month.
+	 * If a transaction is archived, it's part of an older budget.
+	 * */
 	@Override
-	public void addTransaction(Transaction transaction) {
-		String query = "insert into transactions (owner, date, amount, category, account, archived) values (?, ?, ?, ?, ?, '0')";
+	public void addTransaction(Transaction transaction, boolean archived) {
+		
+		String query;
+		
+		if (archived)
+		{
+			query = "insert into transactions (owner, date, amount, category, account, archived) values (?, ?, ?, ?, ?, '1')";
+		}
+		else
+		{
+			query = "insert into transactions (owner, date, amount, category, account, archived) values (?, ?, ?, ?, ?, '0')";
+		}
+
 		jdbcTemplateObject.update(query, transaction.getOwner(), transaction.getDate(), transaction.getAmount(), transaction.getCategory(), transaction.getAccount());
 	}
 
@@ -196,6 +211,9 @@ public class AccountJdbc implements AccountDao{
 		}
 	}
 
+	/**
+	 * Retrieves the status of the current budget. Budget Amount versus Budget Spent.
+	 */
 	@Override
 	public List<BudgetStatus> getBudgetStatus(String username) {
 
@@ -264,6 +282,9 @@ public class AccountJdbc implements AccountDao{
 		return result;
 	}
 
+	/**
+	 * Retrieves all archived budgets.
+	 */
 	@Override
 	public List<BudgetItem> getBudgetArchive(String username) {
 		

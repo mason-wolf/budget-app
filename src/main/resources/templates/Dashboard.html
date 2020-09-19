@@ -1,150 +1,142 @@
 <html xmlns:th="https://www.thymeleaf.org">
-<head lang="en" th:include="header :: header"> 
-</head>
+    <head lang="en" th:include="header :: header"> </head>
     <title>Overview</title>
-  </head>
-  <body>
-
-<div class="col-12" style="padding:0px;">
-
-  <div class="col-6 center shadow" style="padding:1em;">
- 
-  <!--  Remaining Funds -->
-  <div class="col-4" style="padding:1px;text-align:center;">
-    <div class="col-12 widget">
-        <h2>Income</h2>
-        <div class="money" style="margin-top:25px;"><p th:text="${income}"></div> 
-        <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
-        <a href='#' onclick="document.getElementById('AddIncome').style.display='block'">Add Income</a>
-        </div>
-    </div>
-</div>
-   
-<!--  Add Income modal -->
-<div id="AddIncome" class="modal">
-    <div class="modal-content animate-top">
-        <div class="col-12" style="background-color:#fff;padding:30px;">
-
-            <span onclick="document.getElementById('AddIncome').style.display='none'" style="float:right;"><i class="far fa-times-circle" style="font-size:25px;"></i></span>
-
-<div class="col-12"><h2>Add Income</h2></div>
-            <form method="post" th:action="@{/AddIncome}">
-                <div class="col-4" style="margin-top:5px;">Amount:</div>
-                <div class="col-6">    
-                    <span class="currency">
-                        <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount"></span>
+    <body>
+        <div class="col-12" style="padding: 0px;">
+            <div class="col-6 center shadow" style="padding: 1em;">
+                <!--  Remaining Funds -->
+                <div class="col-4" style="padding: 1px; text-align: center;">
+                    <div class="col-12 widget">
+                        <h2>Income</h2>
+                        <div class="money" style="margin-top: 25px;"><p th:text="${income}"></p></div>
+                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
+                            <a href="#" onclick="document.getElementById('AddIncome').style.display='block'">Add Income</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-4">Date:</div>
-                <div class="col-6"><input type="date" class="field" name="date" id="date" required  value="<?php echo $today; ?>"></div></br></br>
-                <div class="col-4" style="float:right;"><input type="submit" value="Add" class="button"></div>
-            </form>
 
-        </div>
-    </div>
-</div>
+                <!--  Add Income modal -->
+                <div id="AddIncome" class="modal">
+                    <div class="modal-content animate-top">
+                        <div class="col-12" style="background-color: #fff; padding: 30px;">
+                            <span onclick="document.getElementById('AddIncome').style.display='none'" style="float: right;"><i class="far fa-times-circle" style="font-size: 25px;"></i></span>
 
-<div class="col-4" style="padding:1px;text-align:center;">
-    <div class="col-12 widget">
-        <h2>Total Spent</h2>
+                            <div class="col-12"><h2>Add Income</h2></div>
+                            <form method="post" th:action="@{/AddIncome}">
+                                <div class="col-4" style="margin-top: 5px;">Amount:</div>
+                                <div class="col-6">
+                                    <span class="currency"> <input type="text" class="field" placeholder="0.00" style="padding-left: 17px;" name="amount" /></span>
+                                </div>
+                                <div class="col-4">Date:</div>
+                                <div class="col-6"><input type="date" class="field" name="date" id="date" required /></div>
+                                <div class="col-4" style="float: right;"><input type="submit" value="Add" class="button" /></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-        <div class='money' style='margin-top:25px;'><p th:text="${totalSpent}"></p></div>
-        <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
-        <a href="/AccountActivity">View Account Activity</a>
-        </div>
-    </div>
-</div>
+                <div class="col-4" style="padding: 1px; text-align: center;">
+                    <div class="col-12 widget">
+                        <h2>Total Spent</h2>
+
+                        <div class="money" style="margin-top: 25px;"><p th:text="${totalSpent}"></p></div>
+                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
+                            <a href="/AccountActivity">View Account Activity</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Total Budget -->
+                <div class="col-4" style="padding: 1px; text-align: center;">
+                    <div class="col-12 widget">
+                        <h2>Remaining</h2>
+                        <div class="money" style="margin-top: 25px;"><p th:text="${remainingFunds}"></p></div>
+                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
+                            <a href="/ManageBudget">Manage Budget</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Recent Spending -->
+
+                <div class="col-12" th:if="${invalidIncomeAmount}">
+                    <div class="col-12" id="hideDiv" style="background-color: #f55b5b; color: #fff; text-align: center; margin-top: 10px;">Please enter a valid income amount.</div>
+                    <script>
+                        $(function () {
+                            setTimeout(function () {
+                                $("#hideDiv").fadeOut(1500);
+                            }, 2000);
+                        });
+                    </script>
+                </div>
+
+                <!-- Projected Spending -->
+
+                <div class="col-12" th:if="${noBudget}">
+                    <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
+                    <div class="col-12" style="border: 1px solid #ddd; text-align: center; margin-top: 10px;">No projected expenses.<a href="/ManageBudget">Manage Budget</a></div>
+                </div>
+
+                <div class="col-12" style="margin-top: 30px;" th:if="${budgetStatus}">
+                    <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
+
+                    <div th:each="item : ${budgetStatus}">
+                        <div class="col-12">
+                            <span th:text="${item.category}" style="float: left;"></span>
+
+                            <span th:text="${item.budgetAmount}" style="float: right;"></span>
+                            <span style="float: right;">$</span>
+                            <span style="float: right; margin-right: 5px; margin-left: 5px;">of</span>
+                            <span th:text="${item.budgetSpent}" style="float: right;"> </span>
+                            <span style="float: right;">$</span>
+                        </div>
+                        <div class="col-12 projectedSpendingProgress" id="spendingProgress"></div>
+                    </div>
+                    <script type="text/javascript" th:inline="javascript">
+
+                        var budgetList = [[${budgetStatus}]];
+
+                        for (i = 0; i < budgetList.length; i++)
+                        	{
+                        		var newItem = document.createElement("div");
+                        		newItem.style.marginBottom = "54px";
+
+                        		if (budgetList[i].percentageSpent < 101)
+                        			{
+                            		newItem.style.width = budgetList[i].percentageSpent  + "%";
+                               		newItem.className = "projectedSpendingItem";
+
+                             		if (budgetList[i].percentageSpent > 75)
+                             		{
+                             			newItem.style.backgroundColor = "#e0e036";
+                             		}
+
+                        			}
+                        		else
+                        			{
+                              		newItem.className = "projectedSpendingItemExceeded";
+                        			newItem.style.backgroundColor = "#ff5340";
+                            		newItem.style.width = "100%";
+                        			}
 
 
- <!--  Total Budget -->
-<div class="col-4" style="padding:1px;text-align:center;">
-    <div class="col-12 widget">
-        <h2>Remaining</h2>
-            <div class='money' style='margin-top:25px;'><p th:text="${remainingFunds}"></p></div>
-                    <div class="col-12" style="text-align:right; padding:0px;text-align:center;font-size:18px;margin-top:15px;">
-        <a href="/ManageBudget">Manage Budget</a>
-        </div>
-    </div>
-</div>
+                        		document.getElementById("spendingProgress").appendChild(newItem);
+                        	}
+                    </script>
 
-<!--  Recent Spending -->
+                    <div class="col-12" th:if="${otherSpent}">
+                        <p style="float: left;">Other</p>
+                        <p th:text="${otherSpent}" style="float: right;"></p>
+                    </div>
 
-   <div class = "col-12"  th:if="${invalidIncomeAmount}">
-   			<div class='col-12' id="hideDiv" style='background-color:#f55b5b;color:#fff;text-align:center;margin-top:10px;' >Please enter a valid income amount.</div>
-   			<script>
-   			$(function() {
-   				setTimeout(function() { $("#hideDiv").fadeOut(1500); }, 2000)
-
-   				})
-   		   </script>
-   	</div>
-	
-<!-- Projected Spending -->
-
-   <div class = "col-12"  th:if="${noBudget}">
-	      <h2 style="margin-bottom:15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
-   			<div class='col-12' style='border:1px solid #ddd;text-align:center;margin-top:10px;' >No projected expenses. </br><a href="/ManageBudget">Manage Budget</a></div>
-   	</div>
-   	
-   
-   	   <div class = "col-12" style="margin-top:30px;" th:if="${budgetStatus}">
-	      <h2 style="margin-bottom:15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
-	        
-
-     <div th:each="item : ${budgetStatus}">
-     	<div class="col-12"><span th:text="${item.category}" style="float:left;"></span>
+                    <div class="col-2" style="float: right; padding: 0px; margin-top: 35px;">
+                        <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" />
+                    </div>
   
-     		<span th:text="${item.budgetAmount}" style="float:right;"></span> 
-     		<span style="float:right;">$</span>
-     		<span style="float:right;margin-right:5px;margin-left:5px;">of</span>
-     		<span th:text="${item.budgetSpent}" style="float:right;"> </span>
-     		<span style="float:right;">$</span> 
-     	</div>
-     	<div class="col-12 projectedSpendingProgress" id="spendingProgress" ></div>
-     </div> 
-             <script type="text/javascript" th:inline="javascript">
-    
-                            var budgetList = [[${budgetStatus}]];
-                            
-                            for (i = 0; i < budgetList.length; i++)
-                            	{
-                            		var newItem = document.createElement("div");
-                            		newItem.style.marginBottom = "54px";
-                            		
-                            		if (budgetList[i].percentageSpent < 101)
-                            			{
-                                		newItem.style.width = budgetList[i].percentageSpent  + "%";
-                                   		newItem.className = "projectedSpendingItem";
-                                   		
-	                                		if (budgetList[i].percentageSpent > 75)
-	                                		{
-	                                			newItem.style.backgroundColor = "#e0e036";
-	                                		}
-
-                            			}
-                            		else 
-                            			{
-                                  		newItem.className = "projectedSpendingItemExceeded";
-                            			newItem.style.backgroundColor = "#ff5340";
-                                		newItem.style.width = "100%";
-                            			}
-
-
-                            		document.getElementById("spendingProgress").appendChild(newItem);
-                            	}
-     </script>  
-     
-     <div class="col-12" th:if="${otherSpent}">
-     <p style="float:left;">Other</p><p th:text="${otherSpent}" style="float: right;">
-     </div>
-     
-    <div class="col-2" style="float:right;padding:0px;margin-top:35px;">   
-          <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button">
-        </div>
-<!--  
      <div class="col-12" style="padding:0px;margin-top:35px;margin-bottom:100px;">
 	        <table class="budgetProgress">
 	          <tr>
-
+				<th>1</th><th>2</th><th>3</th>
 	            <tr>
 	            <td th:switch="${#lists.size(budgetStatus)}">
 	            		<span th:case="*">
@@ -169,18 +161,23 @@
 	        </table>
 	       </div>
    	 </div>
--->
-   	 <div class="col-12" style="margin-top:15px;">
-   	 <h2>Budget History</h2>
-   	 <div class="col-6" style="margin-left:-18px;">
-   	    	 <select class="field">
-   	    	 	<option>April 2020</option>
-   	    	 </select></br></br>
-   	    	  <div class="col-3" style="margin-right:-20px; float:right;">
-   	    	    <input type="submit" class="button" value="View" > 
-   	    	  </div>
-   	    	 </div>
-   	 </div>
-   	 </div>
-   	 </div>
-</div>
+
+                    <div class="col-12" style="margin-top: 15px;" th:if="${budgetArchive}">
+                        <h2>Budget History</h2>
+                        <div class="col-6" style="margin-left: -18px;">
+                            <form method="post" th:action="@{/Dashboard}">
+                                <select class="field" name="budgetMonthYear">
+                                    <option th:each="budget : *{budgetArchive}" th:value="${budget}" th:text="${budget}"></option>
+                                </select>
+
+                                <div class="col-3" style="margin-right: -20px; float: right;">
+                                    <input type="submit" class="button" value="View" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
