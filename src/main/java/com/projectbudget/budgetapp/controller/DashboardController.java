@@ -4,10 +4,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -15,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +33,6 @@ import com.projectbudget.budgetapp.model.Account;
 import com.projectbudget.budgetapp.model.BudgetItem;
 import com.projectbudget.budgetapp.model.BudgetStatus;
 import com.projectbudget.budgetapp.model.Transaction;
-
 
 @Controller
 public class DashboardController {
@@ -54,7 +59,7 @@ public class DashboardController {
 		// Create a new transaction to track income history.
 		Transaction transaction = new Transaction();
 		transaction.setOwner(currentUser());
-		transaction.setDate(getBudgetMonthYear(dateRecieved));
+		transaction.setDate(dateRecieved);
 		transaction.setAmount(Double.parseDouble(balance));
 		transaction.setCategory("Income");
 		
@@ -118,9 +123,14 @@ public class DashboardController {
 	
 	// Show a list of recent transactions.
 	@RequestMapping(value = "/AccountActivity", method = RequestMethod.GET)
-	public String viewTransactions(Model model)
+	public String viewTransactions(Model model) throws ParseException
 	{
 		List<Transaction> accountActivity = AccountJdbc.query.getTransactionHistory(currentUser());
+		
+		for (Transaction t : accountActivity)
+		{
+			t.setDate(getBudgetDate(t.getDate()));
+		}
 		
 		if (accountActivity.size() == 0)
 		{
@@ -174,13 +184,7 @@ public class DashboardController {
             return "Dashboard";	
     	}
     }
-    
-	@RequestMapping(value = "/Dashboard", method = RequestMethod.POST)
-	public String showArchivedBudget(@RequestParam("budgetMonthYear") String budget, Model model)
-	{	
-		return "BudgetHistory";
-	}
-	
+   	
     public void populateDashboard(Model model) throws ParseException 
     {
 
@@ -258,21 +262,17 @@ public class DashboardController {
 		
 		model.addAttribute("budgetTimeFrame", budgetTimeFrame);
 		
-
-		List<BudgetItem> budgetArchive = AccountJdbc.query.getBudgetArchive(currentUser());
+		List<BudgetItem> budgetArchive = AccountJdbc.query.getAllBudgetArchives(currentUser());
 		List<String> dateList = new ArrayList<String>();
 		
 		if (budgetArchive.size() != 0)
 		{
 			// Populate a list with budgets by month and year.
-			for (BudgetItem b : budgetArchive)
-			{
-				if (b.getArchived())
+			for (BudgetItem budgetItem : budgetArchive)
+			{			
+				if (!dateList.contains(getBudgetMonthYear(budgetItem.getStartDate())))
 				{
-					if (!dateList.contains(b.getStartDate()))
-					{
-						dateList.add(getBudgetMonthYear(b.getStartDate()));
-					}
+					dateList.add(getBudgetMonthYear(budgetItem.getStartDate()));
 				}
 			}	
 			
@@ -280,6 +280,60 @@ public class DashboardController {
 		}		
     }
     
+	@RequestMapping(value = "/Dashboard", method = RequestMethod.POST)
+	public String showArchivedBudget(@RequestParam("budgetMonthYear") String budgetMonthYear, Model model)
+	{	
+		// Strip the month from the budgetMonthYear string.
+		char[] timeFrameChars = budgetMonthYear.toCharArray();
+		String budgetMonth = "";
+		
+		for (int i = 0; i < timeFrameChars.length; i++)
+		{
+			if (!Character.isDigit(timeFrameChars[i]) && timeFrameChars[i] != ' ')
+			{
+				budgetMonth = budgetMonth + timeFrameChars[i]; 
+			}
+		}
+		
+		// Strip the year from the budgetMonthString
+	    int budgetYear = Integer.parseInt(budgetMonthYear.replaceAll("[^0-9]", ""));		
+		DateTimeFormatter parser = DateTimeFormatter.ofPattern("MMMM").withLocale(Locale.ENGLISH);
+		TemporalAccessor accessor = parser.parse(budgetMonth);
+		List<BudgetStatus> budgetArchive = AccountJdbc.query.getBudgetArchive(currentUser(), accessor.get(ChronoField.MONTH_OF_YEAR), budgetYear);
+		
+		double amountEarned = 0;
+		
+		try 
+		{
+			amountEarned = AccountJdbc.query.getAmountEarned(currentUser(), accessor.get(ChronoField.MONTH_OF_YEAR), budgetYear);
+		}
+		catch(Exception e)
+		{
+			amountEarned = 0;
+		}
+		
+		double totalBudget = 0;
+		double totalSpent = 0;
+
+		for(BudgetStatus budgetItem : budgetArchive)
+		{
+			totalBudget += budgetItem.getBudgetAmount();
+			totalSpent += budgetItem.getBudgetSpent();
+		}
+		
+		double remaining = amountEarned - totalSpent;
+		
+		model.addAttribute("amountEarned", amountEarned);
+		model.addAttribute("totalBudget", totalBudget);
+		model.addAttribute("totalSpent", totalSpent);
+		model.addAttribute("remaining", remaining);
+		model.addAttribute("budgetMonth", budgetMonth);
+		model.addAttribute("budgetYear", budgetYear);
+		model.addAttribute("budgetArchive", budgetArchive);
+		
+		return "BudgetHistory";
+	}
+	
     // Formats the account date into from yyyy-MM-dd format into the budget's month.
 	public static String getBudgetMonth(String budgetDate) throws ParseException
 	{
@@ -293,6 +347,7 @@ public class DashboardController {
 		return monthFormatted;
 	}
 	
+	// Formats a date string from yyyy-MM-dd format into the month and year.
 	public String getBudgetMonthYear(String dateString) throws ParseException
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -303,6 +358,19 @@ public class DashboardController {
 		String monthLowerCase = month.toLowerCase();
 		String monthFormatted = monthLowerCase.substring(0, 1).toUpperCase() + monthLowerCase.substring(1);
 		String dateFormatted = monthFormatted + " " + localDate.getYear();
+		return dateFormatted;
+	}
+	
+	// Formats a date string from yyyy-MM-dd format into mm/dd/yyy format.
+	public static String getBudgetDate(String dateString) throws ParseException
+	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		date = dateFormat.parse(dateString);
+	    LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		int month = localDate.getMonthValue();
+		int day = localDate.getDayOfMonth();
+		String dateFormatted = month + "/" + day + "/" + localDate.getYear();
 		return dateFormatted;
 	}
 	
@@ -330,8 +398,8 @@ public class DashboardController {
 		
 		LocalDate currentDate = LocalDate.now();
 		String currentMonth = currentDate.getMonth().toString().toLowerCase();
-
-		if (currentMonth.equals(date))
+		
+		if (!currentMonth.equals(getBudgetMonth(date).toLowerCase()))
 		{
 			lapsedMonth = true;
 		}

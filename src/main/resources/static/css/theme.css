@@ -152,15 +152,12 @@ h2 {
 
 .budgetProgress {
 	font-weight: 300;
-    font-size: 25px;
+    font-size: 20px;
     font-family: heebo;
-    text-align:center;
 }
 
 .budgetProgress td 
 {
-
 	font-size: 20px;
     font-family: heebo;
-	text-align:Center;
 }

@@ -86,7 +86,7 @@ public class TransactionController {
 		// Determine if the date has lapsed for this transaction,
 		// if it's part of an older budget, archive the transaction.
 
-	//	System.out.println(DashboardController.monthLapsed(date));
+		System.out.println(DashboardController.monthLapsed(date));
 		
 		if (DashboardController.monthLapsed(date))
 		{

@@ -74,7 +74,7 @@
 
                 <div class="col-12" th:if="${noBudget}">
                     <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
-                    <div class="col-12" style="border: 1px solid #ddd; text-align: center; margin-top: 10px;">No projected expenses.<a href="/ManageBudget">Manage Budget</a></div>
+                    <div class="col-12" style="border: 1px solid #ddd; text-align: center; margin-top: 10px;">No projected expenses.<br><a href="/ManageBudget">Manage Budget</a></div>
                 </div>
 
                 <div class="col-12" style="margin-top: 30px;" th:if="${budgetStatus}">
@@ -133,35 +133,6 @@
                         <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" />
                     </div>
   
-     <div class="col-12" style="padding:0px;margin-top:35px;margin-bottom:100px;">
-	        <table class="budgetProgress">
-	          <tr>
-				<th>1</th><th>2</th><th>3</th>
-	            <tr>
-	            <td th:switch="${#lists.size(budgetStatus)}">
-	            		<span th:case="*">
-				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.category}"/>
-				        </span>  
-	            </td>
-	            
-	            <td th:switch="${#lists.size(budgetStatus)}">
-	            		<span th:case="*">
-				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.budgetAmount}"/>
-			        </span>           
-	            </td>
-	            
-	            <td th:switch="${#lists.size(budgetStatus)}">
-	            		<span th:case="*">
-				        	<p th:each="budgetItem:${budgetStatus}" th:text="${budgetItem.budgetSpent}"/>
-			            </span>           
-	            </td>
-	            
-	            
-	            </tr>
-	        </table>
-	       </div>
-   	 </div>
-
                     <div class="col-12" style="margin-top: 15px;" th:if="${budgetArchive}">
                         <h2>Budget History</h2>
                         <div class="col-6" style="margin-left: -18px;">

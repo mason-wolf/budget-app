@@ -10,7 +10,48 @@
         <div class="col-12" style="padding:1em;">
             <div class="col-12"><a href="/Dashboard">Dashboard</a> <span style="margin-left:15px;margin-right:15px;">></span>Budget History</div>
             <div class="col-12">
-                <h2>Budget History</h2></br>
+                <h2 th:text="${budgetMonth} + ' ' + ${budgetYear} + ' ' + Budget"></h2><br>
+                     <div class="col-12" style="padding:0px;margin-top:35px;margin-bottom:100px;">
+	        <table class="budgetProgress">
+	          <tr>
+				<th>Category</th><th>Budget</th><th>Spent</th>
+	            <tr>
+	            <td th:switch="${#lists.size(budgetArchive)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.category}"/>
+				        </span>  
+	            </td>
+	            
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.budgetAmount}"/>
+			        </span>           
+	            </td>            
+	            <td th:switch="${#lists.size(budgetStatus)}">
+	            		<span th:case="*">
+				        	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.budgetSpent}"/>
+			            </span>           
+	            </td>	       	            
+	            </tr>
+	            <tr>
+	            	<th>Income</th>
+	            	<td><p th:text="${amountEarned}"></p></td>
+	            </tr>
+	            <tr>
+	            	<th>Budget</th>
+	            	<td><p th:text="${totalBudget}"></p></td>
+	            </tr>
+	            <tr>
+	            	<th>Spent</th>
+	            	<td><p th:text="${totalSpent}"></p></td>
+	            </tr>
+	            <tr>
+	            	<th>Balance</th>
+	            	<td><p th:text="${remaining}"></p></td>
+	            </tr>
+	        </table>
+	       </div>
+   	 </div>
         </div>
     </div>
 </div>
