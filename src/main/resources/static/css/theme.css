@@ -8,7 +8,7 @@ html { font-family: Barlow; font-size:18px;}
 .menu-vertical a:hover { color: #1c6b22; }
 input, select, option { font-family: Barlow; font-size:18px;}
 .button { background-color:#2b6925; color:#fff; padding:.5em;width:100%;border:1px solid #2b6925;font-size:16px;}
-a { color: #245d1f;}
+a { color: #133d14; font-weight: 500;}
 a:hover { color: #399231;}
 .default { background-color:#ccc; }
 * { box-sizing: border-box; margin:0px; }
@@ -58,8 +58,7 @@ a {text-decoration: none;}
     content: "$";
     font-size: 18px !important;
     font-weight: 400;
-    position: absolute;
-    
+    position: absolute; 
     display: block;
     height: 100%;
     top: 0;
@@ -86,7 +85,7 @@ td, th {
 }
 
 .projectedSpendingItem {
-	background-color:#34eb80;
+	background-color:#89d98c;
 	border-top-left-radius: 50px 100px; 
 	border-bottom-left-radius: 50px 100px;
 	height:100%;
@@ -106,7 +105,7 @@ td, th {
     float:left;
     height:20px;
     padding:0px;
-    border:1px solid #ccc;
+  	border:1px solid #ccc;
     text-align: left;
     font-size:12px;
     border-top-left-radius: 50px 100px;
@@ -129,17 +128,29 @@ td, th {
   }
 
 .money {
-    font-family: 'Heebo';
+    font-family: 'Open Sans', sans-serif;
     font-size:25px;
+    font-weight:300;
+}
+
+.money-small {
+    font-family: 'Open Sans', sans-serif;
+    font-size:18px;
+    font-weight:300;
 }
 
 .widget {
+	margin-top:20px;
     font-size:30px;
     font-family: 'Heebo', sans-serif;
+    width:99%;
 }
 
 .widget h2 {
-    font-weight: 200;
+	/*
+	color:white;
+	background-color:#7bb37e;*/
+    font-weight: 400;
     font-size: 35px;
     font-family: heebo;
 }
@@ -147,7 +158,7 @@ td, th {
 h2 {
     font-size: 35px;
     font-family: 'Heebo';
-    font-weight: 200;
+    font-weight: 300;
 }
 
 .budgetProgress {

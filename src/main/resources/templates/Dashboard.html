@@ -3,9 +3,9 @@
     <title>Overview</title>
     <body>
         <div class="col-12" style="padding: 0px;">
-            <div class="col-6 center shadow" style="padding: 1em;">
+            <div class="col-8 center shadow" style="padding: 1em;">
                 <!--  Remaining Funds -->
-                <div class="col-4" style="padding: 1px; text-align: center;">
+                <div class="col-4" style="padding: 0px; text-align: center;">
                     <div class="col-12 widget">
                         <h2>Income</h2>
                         <div class="money" style="margin-top: 25px;"><p th:text="${income}"></p></div>
@@ -14,7 +14,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-4" style="padding: 0px; text-align: center;">
+                    <div class="col-12 widget">
+                        <h2>Total Spent</h2>
 
+                        <div class="money" style="margin-top: 25px;"><p th:text="${totalSpent}"></p></div>
+                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
+                            <a href="/AccountActivity">View Account Activity</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4" style="padding: 0px; text-align: center;">
+                    <div class="col-12 widget">
+                        <h2>Balance</h2>
+                        <div class="money" style="margin-top: 25px;"><p th:text="${remainingFunds}"></p></div>
+                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
+                            <a href="/ManageBudget">Manage Budget</a>
+                        </div>
+                    </div>
+                </div>
                 <!--  Add Income modal -->
                 <div id="AddIncome" class="modal">
                     <div class="modal-content animate-top">
@@ -25,34 +43,12 @@
                             <form method="post" th:action="@{/AddIncome}">
                                 <div class="col-4" style="margin-top: 5px;">Amount:</div>
                                 <div class="col-6">
-                                    <span class="currency"> <input type="text" class="field" placeholder="0.00" style="padding-left: 17px;" name="amount" /></span>
+                                    <span class="currency"> <input type="text" class="field money-small" placeholder="0.00" style="padding-left: 17px;" name="amount" /></span>
                                 </div>
                                 <div class="col-4">Date:</div>
                                 <div class="col-6"><input type="date" class="field" name="date" id="date" required /></div>
                                 <div class="col-4" style="float: right;"><input type="submit" value="Add" class="button" /></div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-4" style="padding: 1px; text-align: center;">
-                    <div class="col-12 widget">
-                        <h2>Total Spent</h2>
-
-                        <div class="money" style="margin-top: 25px;"><p th:text="${totalSpent}"></p></div>
-                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
-                            <a href="/AccountActivity">View Account Activity</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Total Budget -->
-                <div class="col-4" style="padding: 1px; text-align: center;">
-                    <div class="col-12 widget">
-                        <h2>Remaining</h2>
-                        <div class="money" style="margin-top: 25px;"><p th:text="${remainingFunds}"></p></div>
-                        <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
-                            <a href="/ManageBudget">Manage Budget</a>
                         </div>
                     </div>
                 </div>
@@ -84,11 +80,11 @@
                         <div class="col-12">
                             <span th:text="${item.category}" style="float: left;"></span>
 
-                            <span th:text="${item.budgetAmount}" style="float: right;"></span>
-                            <span style="float: right;">$</span>
+                            <span th:text="${item.budgetAmount}" style="float: right;" class="money-small"></span>
+                            <span style="float: right;" class="money-small">$</span>
                             <span style="float: right; margin-right: 5px; margin-left: 5px;">of</span>
-                            <span th:text="${item.budgetSpent}" style="float: right;"> </span>
-                            <span style="float: right;">$</span>
+                            <span th:text="${item.budgetSpent}" style="float: right;" class="money-small"> </span>
+                            <span style="float: right;" class="money-small">$</span>
                         </div>
                         <div class="col-12 projectedSpendingProgress" id="spendingProgress"></div>
                     </div>
@@ -99,8 +95,13 @@
                         for (i = 0; i < budgetList.length; i++)
                         	{
                         		var newItem = document.createElement("div");
-                        		newItem.style.marginBottom = "54px";
-
+                        		newItem.style.marginBottom = "56px";
+                        		
+                        		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+                        			{
+                            		newItem.style.marginBottom = "58px";
+                        			}
+                        		
                         		if (budgetList[i].percentageSpent < 101)
                         			{
                             		newItem.style.width = budgetList[i].percentageSpent  + "%";
@@ -108,14 +109,14 @@
 
                              		if (budgetList[i].percentageSpent > 75)
                              		{
-                             			newItem.style.backgroundColor = "#e0e036";
+                             			newItem.style.backgroundColor = "#d1d15e";
                              		}
 
                         			}
                         		else
                         			{
                               		newItem.className = "projectedSpendingItemExceeded";
-                        			newItem.style.backgroundColor = "#ff5340";
+                        			newItem.style.backgroundColor = "#bf645a";
                             		newItem.style.width = "100%";
                         			}
 
@@ -129,20 +130,20 @@
                         <p th:text="${otherSpent}" style="float: right;"></p>
                     </div>
 
-                    <div class="col-2" style="float: right; padding: 0px; margin-top: 35px;">
-                        <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" />
+                    <div class="col-3" style="float: right; margin-top: 35px;">
+                        <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" style="width:125px;float:right;"/>
                     </div>
   
-                    <div class="col-12" style="margin-top: 15px;" th:if="${budgetArchive}">
+                    <div class="col-12"th:if="${budgetArchive}">
                         <h2>Budget History</h2>
                         <div class="col-6" style="margin-left: -18px;">
                             <form method="post" th:action="@{/Dashboard}">
-                                <select class="field" name="budgetMonthYear">
+                                <select class="field" name="budgetMonthYear" >
                                     <option th:each="budget : *{budgetArchive}" th:value="${budget}" th:text="${budget}"></option>
                                 </select>
 
-                                <div class="col-3" style="margin-right: -20px; float: right;">
-                                    <input type="submit" class="button" value="View" />
+                                <div class="col-6" style="margin-right: -50px; float: right;">
+                                    <input type="submit" class="button" value="View" style="width:125px;float:right;"/>
                                 </div>
                             </form>
                         </div>

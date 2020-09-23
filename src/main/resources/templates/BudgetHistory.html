@@ -17,37 +17,37 @@
 				<th>Category</th><th>Budget</th><th>Spent</th>
 	            <tr>
 	            <td th:switch="${#lists.size(budgetArchive)}">
-	            		<span th:case="*">
-				        	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.category}"/>
-				        </span>  
-	            </td>
-	            
+	            	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.category}" style="font-size:18px;"/>
+	            </td>           
 	            <td th:switch="${#lists.size(budgetStatus)}">
-	            		<span th:case="*">
-				        	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.budgetAmount}"/>
-			        </span>           
+				    <p th:each="budgetItem:${budgetArchive}" class="money-small" th:text="'$ ' + ${budgetItem.budgetAmount}" style="padding:.08em;">       
 	            </td>            
 	            <td th:switch="${#lists.size(budgetStatus)}">
-	            		<span th:case="*">
-				        	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.budgetSpent}"/>
-			            </span>           
-	            </td>	       	            
+				    <p th:each="budgetItem:${budgetArchive}" 
+				    class="money-small" 
+				    th:text="'$ ' + ${budgetItem.budgetSpent}" 
+				    style="padding:0.08em;"/>         
+	            </td>  	            
 	            </tr>
 	            <tr>
 	            	<th>Income</th>
-	            	<td><p th:text="${amountEarned}"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${amountEarned}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	            <tr>
 	            	<th>Budget</th>
-	            	<td><p th:text="${totalBudget}"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${totalBudget}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	            <tr>
 	            	<th>Spent</th>
-	            	<td><p th:text="${totalSpent}"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${totalSpent}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	            <tr>
 	            	<th>Balance</th>
-	            	<td><p th:text="${remaining}"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${remaining}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	        </table>
 	       </div>
@@ -56,4 +56,4 @@
     </div>
 </div>
 
-</div>
+

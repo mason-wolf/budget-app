@@ -1,6 +1,7 @@
 package com.projectbudget.budgetapp.controller;
 
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.Year;
@@ -51,6 +52,8 @@ public class BudgetManagerController {
 		
 		String budgetTimeframe = budgetTimeframe();
 
+		DecimalFormat dFormat = new DecimalFormat("0.0");
+		
 		if (budgetItems.size() == 0)
 		{
 			model.addAttribute("emptyBudget", "No projected expenses.");
@@ -59,6 +62,8 @@ public class BudgetManagerController {
 		{
 			for (BudgetItem budget : budgetTotals)
 			{
+				String budgetTotal = dFormat.format(budget.getAmount());
+				budget.setAmount(Double.parseDouble(budgetTotal));
 				totalBudget += budget.getAmount();
 			}
 			model.addAttribute("budgetItems", budgetItems);
@@ -67,12 +72,12 @@ public class BudgetManagerController {
 		projectedSavings = account.getBalance() - totalBudget;
 
 		model.addAttribute("budgetTimeframe", budgetTimeframe);
-		model.addAttribute("accountBalance", "$" + account.getBalance());
+		model.addAttribute("accountBalance", "$" + dFormat.format(account.getBalance()));
 		model.addAttribute("categories", budgetCategories);
 		model.addAttribute("budgetTotals", budgetTotals);
-		model.addAttribute("projectedSavings", "$" + projectedSavings);
-		model.addAttribute("totalBudget", "$" + totalBudget);
-		
+		model.addAttribute("projectedSavings", "$" + dFormat.format(projectedSavings));
+		model.addAttribute("totalBudget", "$" + dFormat.format(totalBudget));
+		model.addAttribute("loggedIn", account.getAccountOwner());
 	}
 	@RequestMapping(value = "/ManageBudget", method = RequestMethod.POST)
 	public String addProjectedExpense(@RequestParam("amount") String amount, Model model, @Valid String category)

@@ -74,6 +74,12 @@ public class DashboardController {
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Auto & Transport");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Food & Dining");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Entertainment");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Internet");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Phone");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Gas");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Insurance");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Utilities");
+		AccountJdbc.query.addTransactionCategory(currentUser(), "Rent");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Other");
 		AccountJdbc.query.addTransactionCategory(currentUser(), "Personal Care");
 		AccountJdbc.query.addAccount(currentUser(), account);
@@ -140,6 +146,8 @@ public class DashboardController {
 		{
 			model.addAttribute("accountActivity", accountActivity);
 		}
+		
+		model.addAttribute("loggedIn", currentUser());
 		return "AccountActivity";
 	}
 	
@@ -152,10 +160,17 @@ public class DashboardController {
 		Transaction transaction = AccountJdbc.query.getTransaction(transactionId);
 		
 		// If the transaction is a source of income and the user removes it, update the account balance.		
+		
+		double currentBalance = account.getBalance();
+		
 		if (transaction.getCategory().contains("Income"))
 		{
-			double currentBalance = account.getBalance();
 			double newBalance = currentBalance - transaction.getAmount();
+			AccountJdbc.query.updateBalance(currentUser(), newBalance);
+		}
+		else
+		{
+			double newBalance = currentBalance + transaction.getAmount();
 			AccountJdbc.query.updateBalance(currentUser(), newBalance);
 		}
 		
@@ -223,7 +238,7 @@ public class DashboardController {
 			
 		}
 		
-		DecimalFormat dFormat = new DecimalFormat("0.00");
+		DecimalFormat dFormat = new DecimalFormat("#,##0.00");
 
 		double remainingFunds = account.getBalance() - totalSpent;
 		
@@ -277,7 +292,9 @@ public class DashboardController {
 			}	
 			
 			model.addAttribute("budgetArchive", dateList);
-		}		
+		}	
+		
+		model.addAttribute("loggedIn", account.getAccountOwner());
     }
     
 	@RequestMapping(value = "/Dashboard", method = RequestMethod.POST)

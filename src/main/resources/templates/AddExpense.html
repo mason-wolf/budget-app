@@ -12,13 +12,13 @@
                 <div class="col-12"><h2>Add Expense</h2></div>
                 <div class="col-6" style="white-space:nowrap;">Current Balance:</div>
                 <div class="col-6">
-                    <p th:text="${balance}"></p>
+                    <p th:text="${balance}" class="money"></p>
                 </div>
                     <form method="post" th:action="@{/AddExpense}">
                         <div class="col-6">Amount:</div>
                         <div class="col-6">    
                             <span class="currency">
-                                <input  type="text" class="field"  placeholder="0.00" style="padding-left:17px;" name="amount" required>
+                                <input  type="text" class="field money-small"  placeholder="0.00" style="padding-left:17px;" name="amount" required>
                             </span>
                         </div>
                         <div class="col-6">Category:</br><a href="#" onclick="document.getElementById('categoryManager').style.display='block'" style="font-size:13px;">Manage Categories</a></div>

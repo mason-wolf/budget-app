@@ -1,6 +1,7 @@
 package com.projectbudget.budgetapp.controller;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -85,8 +86,6 @@ public class TransactionController {
 		
 		// Determine if the date has lapsed for this transaction,
 		// if it's part of an older budget, archive the transaction.
-
-		System.out.println(DashboardController.monthLapsed(date));
 		
 		if (DashboardController.monthLapsed(date))
 		{
@@ -133,8 +132,10 @@ public class TransactionController {
 	{
 		Account account = AccountJdbc.query.getAccount(currentUser());
 		List<Category> expenseCategories = AccountJdbc.query.getBudgetCategories(currentUser());
-		model.addAttribute("balance", "$" + account.getBalance());	
+		DecimalFormat dFormat = new DecimalFormat("#,##0.00");
+		model.addAttribute("balance", "$" + dFormat.format(account.getBalance()));	
 		model.addAttribute("categories", expenseCategories);
+		model.addAttribute("loggedIn", account.getAccountOwner());
 	}
 	
 	   public String currentUser()
