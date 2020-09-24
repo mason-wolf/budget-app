@@ -52,7 +52,7 @@ public class BudgetManagerController {
 		
 		String budgetTimeframe = budgetTimeframe();
 
-		DecimalFormat dFormat = new DecimalFormat("0.0");
+		DecimalFormat dFormat = new DecimalFormat("#,##0.00");
 		
 		if (budgetItems.size() == 0)
 		{

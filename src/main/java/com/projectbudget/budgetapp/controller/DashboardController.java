@@ -223,7 +223,7 @@ public class DashboardController {
 		// Get total spent and other spent that was not on the budget.
 
 		double totalSpent = 0;
-		double otherSpent = AccountJdbc.query.getTotalNotBudgeted(currentUser());
+		double otherSpent = AccountJdbc.query.getTotalNotBudgeted(currentUser(), selectedBudgetMonth, selectedBudgetYear);
 
 		
 		if (budgetList.size() == 0)
@@ -345,8 +345,8 @@ public class DashboardController {
 		String formattedTotalBudget = dFormat.format(totalBudget);
 		model.addAttribute("amountEarned", amountEarned);
 		model.addAttribute("totalBudget", formattedTotalBudget);
-		model.addAttribute("totalSpent", totalSpent);
-		model.addAttribute("remaining", remaining);
+		model.addAttribute("totalSpent", dFormat.format(totalSpent));
+		model.addAttribute("remaining", dFormat.format(remaining));
 		model.addAttribute("budgetMonth", budgetMonth);
 		model.addAttribute("budgetYear", budgetYear);
 		model.addAttribute("budgetArchive", budgetArchive);

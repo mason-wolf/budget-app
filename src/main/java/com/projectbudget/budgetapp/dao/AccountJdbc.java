@@ -323,17 +323,18 @@ public class AccountJdbc implements AccountDao{
 	}
 
 	@Override
-	public Double getTotalNotBudgeted(String username) {
+	public Double getTotalNotBudgeted(String username, int month, int year) {
 		
 		String budgetQuery = "select sum(transactions.amount) from transactions \n" + 
-				"left join budgets on transactions.category = budgets.category  \n" + 
-				"where transactions.category != \"Income\" and transactions.owner=? and transactions.category \n" + 
-				"NOT IN (select category from budgets where archived = 0 and owner=?)";
+				"				left join budgets on transactions.category = budgets.category   \n" + 
+				"				where transactions.category != \"Income\" and transactions.owner=? \n" + 
+				"                and month(transactions.date) = ? and year(transactions.date) = ?\n" + 
+				"                and transactions.category NOT IN (select category from budgets where archived = 0 and owner=?)";
 		double result = 0 ;
 		
 		try 
 		{
-		result = jdbcTemplateObject.queryForObject(budgetQuery, new Object[] { username, username }, Double.class);
+		result = jdbcTemplateObject.queryForObject(budgetQuery, new Object[] { username, month, year, username }, Double.class);
 		}
 		catch(Exception e)
 		{

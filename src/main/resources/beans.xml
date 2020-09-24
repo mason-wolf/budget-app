@@ -8,9 +8,9 @@
    <bean id="dataSource" 
       class = "org.springframework.jdbc.datasource.DriverManagerDataSource">
       <property name = "driverClassName" value = "com.mysql.jdbc.Driver"/>
-      <property name = "url" value = "jdbc:mysql://localhost:3306/budgetapp"/>
-      <property name = "username" value = "root"/>
-      <property name = "password" value = "password"/>
+      <property name = "url" value = "jdbc:mysql://aa9xz8i0zjsz4s.ct7fhre5oddy.us-east-2.rds.amazonaws.com:3306/budgetapp"/>
+      <property name = "username" value = ""/>
+      <property name = "password" value = ""/>
    </bean>
 
    <bean id = "UserJdbc" 

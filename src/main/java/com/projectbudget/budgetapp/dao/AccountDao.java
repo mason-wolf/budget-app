@@ -20,7 +20,7 @@ public interface AccountDao {
 	public List<BudgetItem> getBudgetByCategory(String username, int month, int year);
 	public List<BudgetItem> getTotalBudgeted(String username);
 	public List<BudgetItem> getAllBudgetArchives(String username);
-	public Double getTotalNotBudgeted(String username);
+	public Double getTotalNotBudgeted(String username, int month, int year);
 	public Double getAmountEarned(String username, int month, int year);
 	public Transaction getTransaction(int transactionId);
 	public void deleteTransasction(int transactionId);
