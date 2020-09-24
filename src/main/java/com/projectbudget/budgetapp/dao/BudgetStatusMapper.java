@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import com.projectbudget.budgetapp.model.BudgetStatus;
 
 public class BudgetStatusMapper implements RowMapper<BudgetStatus> {

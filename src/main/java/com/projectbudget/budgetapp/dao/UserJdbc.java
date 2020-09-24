@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.projectbudget.budgetapp.model.Account;
 import com.projectbudget.budgetapp.model.User;
@@ -85,6 +86,42 @@ public class UserJdbc implements UserDao {
 		}
 		
 		return accounts;
+	}
+
+	@Override
+	public void addUserToken(String username, String userToken) {
+		String query = "update users set user_token=? where username=?";
+		jdbcTemplateObject.update(query, userToken, username);
+	}
+
+	@Override
+	public String getUserByToken(String userToken) {
+
+		String query = "select username from users where user_token=?";
+		
+		String user = "";
+		
+		try {
+			user = jdbcTemplateObject.queryForObject(query, new Object[] { userToken }, String.class);
+		}
+		catch (Exception e)
+		{
+			user = null;
+		}
+		
+		return user;
+	}
+	
+	@Override
+	public void changePassword(String username, String password) {
+		
+	    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	    String encodedPassword = encoder.encode(password);
+
+		String passwordChangeQuery = "update users set password=? where username=?";
+		String tokenRemovalQuery = "update users set user_token = null where username=?";
+		jdbcTemplateObject.update(passwordChangeQuery, encodedPassword, username);
+		jdbcTemplateObject.update(tokenRemovalQuery, username);
 	}
 
 }

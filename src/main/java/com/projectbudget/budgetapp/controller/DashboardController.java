@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.projectbudget.budgetapp.MailSender;
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.dao.UserJdbc;
 import com.projectbudget.budgetapp.model.Account;
@@ -339,9 +341,10 @@ public class DashboardController {
 		}
 		
 		double remaining = amountEarned - totalSpent;
-		
+		DecimalFormat dFormat = new DecimalFormat("#,##0.00");
+		String formattedTotalBudget = dFormat.format(totalBudget);
 		model.addAttribute("amountEarned", amountEarned);
-		model.addAttribute("totalBudget", totalBudget);
+		model.addAttribute("totalBudget", formattedTotalBudget);
 		model.addAttribute("totalSpent", totalSpent);
 		model.addAttribute("remaining", remaining);
 		model.addAttribute("budgetMonth", budgetMonth);

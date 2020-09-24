@@ -17,14 +17,15 @@
 				<th>Category</th><th>Budget</th><th>Spent</th>
 	            <tr>
 	            <td th:switch="${#lists.size(budgetArchive)}">
-	            	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.category}" style="font-size:18px;"/>
+	            	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.category}" style="font-size:18px;white-space:nowrap;"/>
 	            </td>           
 	            <td th:switch="${#lists.size(budgetStatus)}">
-				    <p th:each="budgetItem:${budgetArchive}" class="money-small" th:text="'$ ' + ${budgetItem.budgetAmount}" style="padding:.08em;">       
+				    <p th:each="budgetItem:${budgetArchive}" class="money-small" th:text="'$ ' + ${budgetItem.budgetAmount}" style="padding:.07em;width:100px;">       
 	            </td>            
-	            <td th:switch="${#lists.size(budgetStatus)}">
+	            <td th:switch="${#lists.size(budgetStatus)}" style="width:350px;white-space:nowrap;">
 				    <p th:each="budgetItem:${budgetArchive}" 
 				    class="money-small" 
+				    th:id="${budgetItem.budgetId}"
 				    th:text="'$ ' + ${budgetItem.budgetSpent}" 
 				    style="padding:0.08em;"/>         
 	            </td>  	            
@@ -50,6 +51,27 @@
 	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	        </table>
+	        
+	                 <script type="text/javascript" th:inline="javascript">
+
+                        var budgetList = [[${budgetArchive}]];
+
+                        for (i = 0; i < budgetList.length; i++)
+                        	{
+                        	  if (budgetList[i].budgetSpent < budgetList[i].budgetAmount)
+                        		  {
+                        		  	document.getElementById(budgetList[i].budgetId).style.color='green';
+                        		  }
+                        	  if (budgetList[i].budgetSpent > budgetList[i].budgetAmount)
+                        		  {
+                      		  		document.getElementById(budgetList[i].budgetId).style.color='red';
+                        		  }
+                        	  if (budgetList[i].budgetSpent == budgetList[i].budgetAmount)
+                    		  {
+                  		  		document.getElementById(budgetList[i].budgetId).style.color='#db8d25';
+                    		  }
+                        	}
+                    </script>
 	       </div>
    	 </div>
         </div>

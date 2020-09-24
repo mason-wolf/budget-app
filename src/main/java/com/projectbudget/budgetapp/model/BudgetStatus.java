@@ -2,6 +2,7 @@ package com.projectbudget.budgetapp.model;
 
 public class BudgetStatus {
 	
+	int budgetId;
 	String category;
 	double budgetAmount;
 	double budgetSpent;
@@ -10,6 +11,16 @@ public class BudgetStatus {
 	public BudgetStatus ()
 	{
 
+	}
+	
+	public int getBudgetId()
+	{
+		return budgetId;
+	}
+	
+	public void setBudgetId(int budgetId)
+	{
+		this.budgetId = budgetId;
 	}
 	
 	public double getPercentageSpent()

@@ -10,7 +10,7 @@ public class Account {
 	private Boolean isPrimary;
 	private String budgetStartDate;
 	private String budgetEndDate;
-	
+
 	public int getId() {
 		return id;
 	}

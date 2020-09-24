@@ -233,7 +233,7 @@ public class AccountJdbc implements AccountDao{
 	public List<BudgetStatus> getBudgetArchive(String username, int month, int year) {
 
 		// Query for all items that were budgeted and amount spent per category.
-		String archiveQuery = "select budgets.category , transactions.amount as budgetSpent, budgets.amount as budgetAmount from budgets  \n" + 
+		String archiveQuery = "select budgets.id as id, budgets.category , transactions.amount as budgetSpent, budgets.amount as budgetAmount from budgets  \n" + 
 				"				left join\n" + 
 				"				transactions on budgets.category = transactions.category\n" + 
 				"                where budgets.owner = ? and MONTH(budgets.startDate) = ? and YEAR(budgets.startDate) = ?\n" + 
@@ -242,7 +242,7 @@ public class AccountJdbc implements AccountDao{
 		List<BudgetStatus> budgetArchive = jdbcTemplateObject.query(archiveQuery, new Object[] { username, month, year }, new BudgetStatusMapper());
 		
 		// Query for items that were spent in the time frame but were not in the budget.
-		String nonBudgetItemsQuery = "SELECT category, sum(case when archived = 1 and owner=? then amount else 0 END) as budgetSpent, 0 as budgetAmount\n" + 
+		String nonBudgetItemsQuery = "SELECT id, category, sum(case when archived = 1 and owner=? then amount else 0 END) as budgetSpent, 0 as budgetAmount\n" + 
 				"FROM transactions WHERE category NOT IN (SELECT category FROM budgets where month(budgets.startDate) = ? and year(budgets.startDate) = ? and owner = ?) \n" + 
 				"AND owner = ? and month(transactions.date) = ?\n" + 
 				"and year(transactions.date) = ?\n" + 
@@ -251,11 +251,19 @@ public class AccountJdbc implements AccountDao{
 		
 		List<BudgetStatus> nonBudgetedItems = jdbcTemplateObject.query(nonBudgetItemsQuery, new Object[] {username, month, year, username, username, month, year }, new BudgetStatusMapper());
 		
-		// Add the items that were not budgeted to the archive report list.
-		
+		// Add the items that were not budgeted to the archive report list.	
 		for(BudgetStatus item : nonBudgetedItems)
 		{
 			budgetArchive.add(item);
+		}
+		
+		int budgetId = 0;
+		
+		// Assign each budget item an id to manipulate data on the client's side. 
+		for(BudgetStatus budgetItems : budgetArchive)
+		{
+			budgetId++;
+			budgetItems.setBudgetId(budgetId);
 		}
 		
 		return budgetArchive;
@@ -286,6 +294,11 @@ public class AccountJdbc implements AccountDao{
 	public void archiveAccount(Account account) {
 		
 		LocalDate currentDate = LocalDate.now();
+		
+		// Get the current items for this month's budgets.
+		String currentBudgetItemsQuery = "select * from budgets where owner=? and archived = 0";
+		List<BudgetItem> budgetItems = jdbcTemplateObject.query(currentBudgetItemsQuery, new Object[] { account.getAccountOwner() }, new BudgetItemMapper());
+		
 		String accountQuery = "update accounts set budgetStartDate = ? where accountOwner = ?";
 		String budgetQuery = "update budgets set archived=1 where owner = ?";
 		String transactionQuery = "update transactions set archived=1 where owner = ?";
@@ -296,6 +309,17 @@ public class AccountJdbc implements AccountDao{
 		jdbcTemplateObject.update(budgetQuery, account.getAccountOwner());
 		// Archive the transactions from last month
 		jdbcTemplateObject.update(transactionQuery, account.getAccountOwner());
+		
+		// Update the budget item dates to be rolled over into this new month's budget.
+		for(BudgetItem budgetItem : budgetItems)
+		{
+			budgetItem.setStartDate(currentDate.toString());
+			String rolloverQuery = "insert into budgets (owner, category, archived, startDate, endDate, amount) values (?, ?, ?, ?, ?, ?)";
+			jdbcTemplateObject.update(rolloverQuery, budgetItem.getOwner(), 
+					budgetItem.getCategory(), 0, budgetItem.getStartDate(), 
+					budgetItem.getEndDate(), budgetItem.getAmount());
+		}
+
 	}
 
 	@Override
@@ -335,6 +359,4 @@ public class AccountJdbc implements AccountDao{
 		double amountEarned =  jdbcTemplateObject.queryForObject(query, new Object[] { username, month, year }, Double.class);
 		return amountEarned;
 	}
-
-
 }

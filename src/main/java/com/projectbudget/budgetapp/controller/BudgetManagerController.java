@@ -79,6 +79,7 @@ public class BudgetManagerController {
 		model.addAttribute("totalBudget", "$" + dFormat.format(totalBudget));
 		model.addAttribute("loggedIn", account.getAccountOwner());
 	}
+	
 	@RequestMapping(value = "/ManageBudget", method = RequestMethod.POST)
 	public String addProjectedExpense(@RequestParam("amount") String amount, Model model, @Valid String category)
 	{

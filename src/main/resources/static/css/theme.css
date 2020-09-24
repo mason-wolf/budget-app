@@ -1,5 +1,5 @@
 html { font-family: Barlow; font-size:18px;}
-.nav { background-color: #0b2913; } 
+.nav { background-color: /* 0#0b2913; */} 
 .nav-header { color:#fff; }
 .nav-toggle, .nav-dropdown { background-color:#0b2913;; color:#fff; margin:0px; padding: 0px; width:50px;}
 .nav-dropdown a { color:#fff; text-decoration: none;}
@@ -36,7 +36,8 @@ a:hover { color: #399231;}
 .menu-mobile { padding:1em; text-align: center; }
 .menu-mobile a { display: block; width:100%; padding:1em; }
 .shadow { box-shadow: 0 2px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,0.19); overflow: auto;}
-
+h1 {font-weight:800; font-size:60px;}
+.landing-page {font-size:30px;}
 h3 { font-size:18px; }
 .field { width: 100%; height:45px; border-radius: 5px; border:1px solid #ccc;padding:.5em;}
 .button:hover {cursor: pointer; }
