@@ -62,8 +62,6 @@ public class BudgetManagerController {
 		{
 			for (BudgetItem budget : budgetTotals)
 			{
-				String budgetTotal = dFormat.format(budget.getAmount());
-				budget.setAmount(Double.parseDouble(budgetTotal));
 				totalBudget += budget.getAmount();
 			}
 			model.addAttribute("budgetItems", budgetItems);

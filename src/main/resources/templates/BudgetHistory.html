@@ -20,13 +20,13 @@
 	            	<p th:each="budgetItem:${budgetArchive}" th:text="${budgetItem.category}" style="font-size:18px;white-space:nowrap;"/>
 	            </td>           
 	            <td th:switch="${#lists.size(budgetStatus)}">
-				    <p th:each="budgetItem:${budgetArchive}" class="money-small" th:text="'$ ' + ${budgetItem.budgetAmount}" style="padding:.07em;width:100px;">       
+				    <p th:each="budgetItem:${budgetArchive}" class="money-small" th:text="${#numbers.formatCurrency(budgetItem.budgetAmount)}" style="padding:.07em;width:100px;">       
 	            </td>            
 	            <td th:switch="${#lists.size(budgetStatus)}" style="width:350px;white-space:nowrap;">
 				    <p th:each="budgetItem:${budgetArchive}" 
 				    class="money-small" 
 				    th:id="${budgetItem.budgetId}"
-				    th:text="'$ ' + ${budgetItem.budgetSpent}" 
+				    th:text="${#numbers.formatCurrency(budgetItem.budgetSpent)}" 
 				    style="padding:0.08em;"/>         
 	            </td>  	            
 	            </tr>

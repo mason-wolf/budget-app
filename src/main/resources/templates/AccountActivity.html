@@ -48,11 +48,11 @@
 		                        <th style="border-bottom:0px;">Category</th>
 		                        <th style="border-bottom:0px;">Expense</th>
 		                    </tr> 
-		                    					
+
 						    <tr th:each="item : ${accountActivity}">
 							   <td><span th:text="${item.date}" class="money-small"></span></td>
 							   	<td><span th:text="${item.category}"></span></td>
-							   <td>$ <span th:text="${item.amount}" class="money-small"></span><a th:onclick="'confirmDelete(\'' + ${item.transactionId} + '\');'" style="float:right;">delete</a></td>
+							   <td><span th:text="${#numbers.formatCurrency(item.amount)}" class="money-small"></span><a th:onclick="'confirmDelete(\'' + ${item.transactionId} + '\');'" style="float:right;">delete</a></td>
 							</tr>
 						 </table>
                 

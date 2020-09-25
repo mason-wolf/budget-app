@@ -1,12 +1,12 @@
 <html xmlns:th="https://www.thymeleaf.org">
     <head lang="en" th:include="header :: header"> </head>
-    <title>Overview</title>
+    <title>Dashboard</title>
     <body>
         <div class="col-12" style="padding: 0px;">
             <div class="col-8 center shadow" style="padding: 1em;">
                 <!--  Remaining Funds -->
                 <div class="col-4" style="padding: 0px; text-align: center;">
-                    <div class="col-12 widget">
+                    <div class="col-12 widget shadow">
                         <h2>Income</h2>
                         <div class="money" style="margin-top: 25px;"><p th:text="${income}"></p></div>
                         <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="col-4" style="padding: 0px; text-align: center;">
-                    <div class="col-12 widget">
+                    <div class="col-12 widget shadow">
                         <h2>Total Spent</h2>
 
                         <div class="money" style="margin-top: 25px;"><p th:text="${totalSpent}"></p></div>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="col-4" style="padding: 0px; text-align: center;">
-                    <div class="col-12 widget">
+                    <div class="col-12 widget shadow">
                         <h2>Balance</h2>
                         <div class="money" style="margin-top: 25px;"><p th:text="${remainingFunds}"></p></div>
                         <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
@@ -80,11 +80,9 @@
                         <div class="col-12">
                             <span th:text="${item.category}" style="float: left;"></span>
 
-                            <span th:text="${item.budgetAmount}" style="float: right;" class="money-small"></span>
-                            <span style="float: right;" class="money-small">$</span>
+                            <span th:text="${#numbers.formatCurrency(item.budgetAmount)}" style="float: right;" class="money-small"></span>
                             <span style="float: right; margin-right: 5px; margin-left: 5px;">of</span>
-                            <span th:text="${item.budgetSpent}" style="float: right;" class="money-small"> </span>
-                            <span style="float: right;" class="money-small">$</span>
+                            <span th:text="${#numbers.formatCurrency(item.budgetSpent)}" style="float: right;" class="money-small"> </span>
                         </div>
                         <div class="col-12 projectedSpendingProgress" id="spendingProgress"></div>
                     </div>
@@ -107,7 +105,7 @@
                             		newItem.style.width = budgetList[i].percentageSpent  + "%";
                                		newItem.className = "projectedSpendingItem";
 
-                             		if (budgetList[i].percentageSpent > 75)
+                             		if (budgetList[i].percentageSpent > 95)
                              		{
                              			newItem.style.backgroundColor = "#d1d15e";
                              		}

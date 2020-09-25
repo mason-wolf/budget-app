@@ -1,5 +1,6 @@
 package com.projectbudget.budgetapp.controller;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -240,15 +242,19 @@ public class DashboardController {
 			
 		}
 		
-		DecimalFormat dFormat = new DecimalFormat("#,##0.00");
-
-		double remainingFunds = account.getBalance() - totalSpent;
+		DecimalFormat dFormat = new DecimalFormat("###,##0.00");
+		
+		double remainingFunds = account.getBalance() + totalSpent - totalSpent;
 		
 		// Budget alloted and spent: compares budget items with transactions
 		List<BudgetStatus> budgetStatusItems = AccountJdbc.query.getBudgetStatus(currentUser());
+		
+		// Sort the items by descending order (highest budgets).
+		budgetStatusItems.sort((firstAmount , secondAmount) -> Double.compare(secondAmount.getBudgetAmount(), firstAmount.getBudgetAmount()));
+		  
 		List<Transaction> transactionHistory = AccountJdbc.query.getTransactionHistory(currentUser());
 		
- 		model.addAttribute("income", "$" + dFormat.format(account.getBalance()));
+ 		model.addAttribute("income", "$" + dFormat.format(account.getBalance() + totalSpent));
  		model.addAttribute("totalSpent", "$" + dFormat.format(totalSpent));
  		model.addAttribute("remainingFunds", "$" + dFormat.format(remainingFunds));
 
