@@ -223,6 +223,15 @@ public class AccountJdbc implements AccountDao{
 				"                where budgets.owner = ? and budgets.archived = 0\n" + 
 				"				group by budgets.category";
 		List<BudgetStatus> budgetStatus = jdbcTemplateObject.query(query, new Object[] { username, username }, new BudgetStatusMapper());
+			  
+		int budgetStatusId = 0;
+		
+	    for(BudgetStatus budgetStatusItem : budgetStatus)
+	    {
+	    	budgetStatusId++;
+	    	budgetStatusItem.setBudgetId(budgetStatusId);
+	    }
+	    
 		return budgetStatus;
 	}
 
@@ -233,13 +242,15 @@ public class AccountJdbc implements AccountDao{
 	public List<BudgetStatus> getBudgetArchive(String username, int month, int year) {
 
 		// Query for all items that were budgeted and amount spent per category.
-		String archiveQuery = "select budgets.id as id, budgets.category , transactions.amount as budgetSpent, budgets.amount as budgetAmount from budgets  \n" + 
-				"				left join\n" + 
-				"				transactions on budgets.category = transactions.category\n" + 
-				"                where budgets.owner = ? and MONTH(budgets.startDate) = ? and YEAR(budgets.startDate) = ?\n" + 
-				"				group by budgets.category";
+		String archiveQuery = "select budgets.id as id, budgets.category , transactions.amount as budgetSpent, budgets.amount as budgetAmount from budgets\n" + 
+				"								left join \n" + 
+				"								transactions on budgets.category = transactions.category \n" + 
+				"				                where budgets.owner = ? and MONTH(budgets.startDate) = ? and YEAR(budgets.startDate) = ?\n" + 
+				"                                and transactions.owner = ? and budgets.owner = ?\n" + 
+				"								group by budgets.category\n" + 
+				"								order by budgetSpent";
 		
-		List<BudgetStatus> budgetArchive = jdbcTemplateObject.query(archiveQuery, new Object[] { username, month, year }, new BudgetStatusMapper());
+		List<BudgetStatus> budgetArchive = jdbcTemplateObject.query(archiveQuery, new Object[] { username, month, year, username, username }, new BudgetStatusMapper());
 		
 		// Query for items that were spent in the time frame but were not in the budget.
 		String nonBudgetItemsQuery = "SELECT id, category, sum(case when archived = 1 and owner=? then amount else 0 END) as budgetSpent, 0 as budgetAmount\n" + 

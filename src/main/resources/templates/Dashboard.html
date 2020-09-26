@@ -1,5 +1,6 @@
 <html xmlns:th="https://www.thymeleaf.org">
-    <head lang="en" th:include="header :: header"> </head>
+    <head lang="en" th:include="header :: header"> 
+    </head>
     <title>Dashboard</title>
     <body>
         <div class="col-12" style="padding: 0px;">
@@ -62,24 +63,26 @@
                             setTimeout(function () {
                                 $("#hideDiv").fadeOut(1500);
                             }, 2000);
-                        });
+                        });                      
                     </script>
                 </div>
 
                 <!-- Projected Spending -->
-
                 <div class="col-12" th:if="${noBudget}">
                     <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
                     <div class="col-12" style="border: 1px solid #ddd; text-align: center; margin-top: 10px;">No projected expenses.<br><a href="/ManageBudget">Manage Budget</a></div>
                 </div>
 
                 <div class="col-12" style="margin-top: 30px;" th:if="${budgetStatus}">
-                    <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '"></h2>
-
+                    <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '">
+                    </h2>                  
+                    <a href="#" id="showProgress" style="float:right;margin-top:-57px;margin-right:40px;"><img src="/images/progress.png"></a>
+                    <a href="#" id="showTable" style="float:right;margin-top:-57px;"><img src="/images/table.png"></a>
+                    
+                    <div id="progressContainer">
                     <div th:each="item : ${budgetStatus}">
                         <div class="col-12">
                             <span th:text="${item.category}" style="float: left;"></span>
-
                             <span th:text="${#numbers.formatCurrency(item.budgetAmount)}" style="float: right;" class="money-small"></span>
                             <span style="float: right; margin-right: 5px; margin-left: 5px;">of</span>
                             <span th:text="${#numbers.formatCurrency(item.budgetSpent)}" style="float: right;" class="money-small"> </span>
@@ -120,14 +123,54 @@
 
 
                         		document.getElementById("spendingProgress").appendChild(newItem);
-                        	}
-                    </script>
+                        	}                      
+                 </script>                    
 
                     <div class="col-12" th:if="${otherSpent}">
                         <p style="float: left;">Other</p>
                         <p th:text="${otherSpent}" style="float: right;" class="money-small"></p>
                     </div>
+					</div>
+					
+					<div id="budgetTableContainer" style="display:none;">
+							<table>
+		                    <tr>
+		                        <th style="border-bottom:0px;">Category</th>
+		                        <th style="border-bottom:0px;">Budget</th>
+		                        <th style="border-bottom:0px;">Spent</th>
+		                    </tr> 
 
+						    <tr th:each="item : ${budgetStatus}">
+							   <td><span th:text="${item.category}"></span></td>
+							   	<td><span th:text="${#numbers.formatCurrency(item.budgetAmount)}" class="money-small"></span></td>
+							   <td><span th:text="${#numbers.formatCurrency(item.budgetSpent)}" th:id="${item.budgetId}" class="money-small"></span></td>
+							</tr>
+							<td th:if="${otherSpent}">Other</td>
+							<td th:if="${otherSpent}" class="money-small">$0.00</td>
+							<td th:if="${otherSpent}"><span th:text="${otherSpent}" class="money-small"></span></td>
+						 </table>
+						 
+	                 <script type="text/javascript" th:inline="javascript">
+
+                        var budgetList = [[${budgetStatus}]];
+
+                        for (i = 0; i < budgetList.length; i++)
+                        	{
+                        	  if (budgetList[i].budgetSpent < budgetList[i].budgetAmount)
+                        		  {
+                        		  	document.getElementById(budgetList[i].budgetId).style.color='green';
+                        		  }
+                        	  if (budgetList[i].budgetSpent > budgetList[i].budgetAmount)
+                        		  {
+                      		  		document.getElementById(budgetList[i].budgetId).style.color='red';
+                        		  }
+                        	  if (budgetList[i].budgetSpent == budgetList[i].budgetAmount)
+                    		  {
+                  		  		document.getElementById(budgetList[i].budgetId).style.color='#db8d25';
+                    		  }
+                        	}
+                    </script>
+				    </div>
                     <div class="col-3" style="float: right; margin-top: 35px;">
                         <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" style="width:125px;float:right;"/>
                     </div>

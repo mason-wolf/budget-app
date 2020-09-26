@@ -223,7 +223,6 @@ public class DashboardController {
 		List<BudgetItem> budgetList = AccountJdbc.query.getBudgetByCategory(currentUser(), selectedBudgetMonth, selectedBudgetYear);
 			
 		// Get total spent and other spent that was not on the budget.
-
 		double totalSpent = 0;
 		double otherSpent = AccountJdbc.query.getTotalNotBudgeted(currentUser(), selectedBudgetMonth, selectedBudgetYear);
 
@@ -251,7 +250,7 @@ public class DashboardController {
 		
 		// Sort the items by descending order (highest budgets).
 		budgetStatusItems.sort((firstAmount , secondAmount) -> Double.compare(secondAmount.getBudgetAmount(), firstAmount.getBudgetAmount()));
-		  
+
 		List<Transaction> transactionHistory = AccountJdbc.query.getTransactionHistory(currentUser());
 		
  		model.addAttribute("income", "$" + dFormat.format(account.getBalance() + totalSpent));
@@ -325,7 +324,7 @@ public class DashboardController {
 		DateTimeFormatter parser = DateTimeFormatter.ofPattern("MMMM").withLocale(Locale.ENGLISH);
 		TemporalAccessor accessor = parser.parse(budgetMonth);
 		List<BudgetStatus> budgetArchive = AccountJdbc.query.getBudgetArchive(currentUser(), accessor.get(ChronoField.MONTH_OF_YEAR), budgetYear);
-		
+
 		double amountEarned = 0;
 		
 		try 
