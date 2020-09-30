@@ -2,10 +2,9 @@
 <head th:fragment="header">
 <!doctype html>
 <html lang="en">
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="A super simple budgeting tool.">
     <meta name="author" content="">
     <link rel="stylesheet" type="text/css" href="../static/css/theme.css" th:href="@{/css/theme.css}"/>
     <link href="https://fonts.googleapis.com/css?family=Barlow" rel="stylesheet">
@@ -19,10 +18,16 @@
     	document.getElementById('showProgress').addEventListener('click',function(){
     	    document.getElementById('progressContainer').style.display = 'block';
     	    document.getElementById('budgetTableContainer').style.display = 'none';
+    	    $('html,body').animate({
+    	        scrollTop: $("#showProgress").offset().top},
+    	        'slow');
     	});
     	document.getElementById('showTable').addEventListener('click',function(){
     	    document.getElementById('progressContainer').style.display = 'none';
     	    document.getElementById('budgetTableContainer').style.display = 'block';
+    	    $('html,body').animate({
+    	        scrollTop: $("#showTable").offset().top},
+    	        'slow');
     	});
      });
     </script>
@@ -31,11 +36,11 @@
 
 <body th:fragment="header" style="text-align:center;">
   <div class="col-12 nav">
+  <h2 style="color:#000;margin-top:-15px;color:#fff;font-weight:800">PennyBudget</h2>
       <div th:if="${loggedIn}">
-      <form method="post" th:action="@{/Logout}" style="float:right;margin-top:-10px;">
+      <form method="post" th:action="@{/Logout}" style="float:right;margin-top:-45px;">
       	<input type="submit" class="button" value="Logout">
       </form>
-      </div>
-   
+      </div>  
       </div>
   </body>

@@ -50,7 +50,7 @@ public class IndexController {
 	}
 	
 	@RequestMapping(value = "/ForgotPassword", method = RequestMethod.POST)
-	public String sendTemporaryPassword(@RequestParam("username") String username, Model model)
+	public String sendTemporaryPassword(@RequestParam("username") String username, Model model) throws Exception
 	{
 		if (!validEmail(username))
 		{

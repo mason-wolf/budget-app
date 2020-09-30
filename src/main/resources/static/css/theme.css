@@ -36,7 +36,7 @@ a:hover { color: #399231;}
 .menu-mobile { padding:1em; text-align: center; }
 .menu-mobile a { display: block; width:100%; padding:1em; }
 .shadow { box-shadow: 0 2px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,0.19); overflow: auto;}
-h1 {font-weight:800; font-size:60px;}
+h1 {font-weight:800; font-size:50px;letter-spacing:-1px;}
 .landing-page {font-size:30px;}
 h3 { font-size:18px; }
 .field { width: 100%; height:45px; border-radius: 5px; border:1px solid #ccc;padding:.5em;}
@@ -128,6 +128,10 @@ td, th {
     }
   }
 
+textarea {
+	    font-family: 'Open Sans', sans-serif;
+	    font-size:18px;
+}
 .money {
     font-family: 'Open Sans', sans-serif;
     font-size:25px;
@@ -172,4 +176,12 @@ h2 {
 {
 	font-size: 20px;
     font-family: heebo;
+}
+
+.footer
+{
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
 }

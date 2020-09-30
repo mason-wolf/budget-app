@@ -6,6 +6,7 @@ import javax.mail.internet.MimeMessage;
 import com.projectbudget.budgetapp.dao.AccountJdbc;
 import com.projectbudget.budgetapp.dao.UserJdbc;
 
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Properties;
@@ -14,48 +15,109 @@ public class MailSender {
 
 	private static final SecureRandom secureRandom = new SecureRandom(); 
 	private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); 
-
+	static final String FROM = "support@pennybudget.com";
+	static final String FROMNAME = "Penny Budget";
+	static final String SMTP_USERNAME = "";
+	static final String SMTP_PASSWORD = "";
+	static final String HOST = "";
+	static final int PORT = 587;   
+    static final String SUBJECT = "Password Reset";
+    
 	public static String generateToken() {
 	    byte[] randomBytes = new byte[24];
 	    secureRandom.nextBytes(randomBytes);
 	    return base64Encoder.encodeToString(randomBytes);
 	}
-	
-	public void SendPasswordResetLink(String username)
+
+	public void SendPasswordResetLink(String username) throws Exception
 	{
-        final String email = "";
-        final String password = "";
+		
+        // Create a Properties object to contain connection configuration information.
+    	Properties props = System.getProperties();
+    	props.put("mail.transport.protocol", "smtp");
+    	props.put("mail.smtp.port", PORT); 
+    	props.put("mail.smtp.starttls.enable", "true");
+    	props.put("mail.smtp.auth", "true");
 
-        Properties prop = new Properties();
-		prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "587");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+        // Create a Session object to represent a mail session with the specified properties. 
+    	Session session = Session.getDefaultInstance(props);
 
-        Session session = Session.getInstance(prop,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(email, password);
-                    }
-                });
+        // Create a message with the specified information. 
+        MimeMessage msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(FROM,FROMNAME));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(username));
+        msg.setSubject(SUBJECT);
+        
+        String userToken = generateToken();
+        UserJdbc.query.addUserToken(username, userToken);
+        String passwordResetUrl = "http://www.pennybudget.com/ResetPassword/" + userToken;
+        
+        msg.setContent("Click here to reset your password: " + passwordResetUrl,"text/html");
+        
 
-        try {
+        // Create a transport.
+        Transport transport = session.getTransport();
+                    
+        // Send the message.
+        try
+        {
+            // Connect to Amazon SES using the SMTP username and password you specified above.
+            transport.connect(HOST, SMTP_USERNAME, SMTP_PASSWORD);
+        	
+            // Send the email.
+            transport.sendMessage(msg, msg.getAllRecipients());
+        }
+        catch (Exception ex) {
+            System.out.println("The email was not sent.");
+            System.out.println("Error message: " + ex.getMessage());
+        }
+        finally
+        {
+            transport.close();
+        }
+	}
+	
+	public void SendContactForm(String email, String contactForm) throws Exception
+	{
+		
+        // Create a Properties object to contain connection configuration information.
+    	Properties props = System.getProperties();
+    	props.put("mail.transport.protocol", "smtp");
+    	props.put("mail.smtp.port", PORT); 
+    	props.put("mail.smtp.starttls.enable", "true");
+    	props.put("mail.smtp.auth", "true");
 
-            Message message = new MimeMessage(session);
-            message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse(username)
-            );
-            message.setSubject("Password Reset");
-            String userToken = generateToken();
-            UserJdbc.query.addUserToken(username, userToken);
-            String passwordResetUrl = "192.168.1.9:5000/ResetPassword/" + userToken;
-            message.setText("Click here to reset your passowrd: " + passwordResetUrl);
+        // Create a Session object to represent a mail session with the specified properties. 
+    	Session session = Session.getDefaultInstance(props);
 
-            Transport.send(message);
+        // Create a message with the specified information. 
+        MimeMessage msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(FROM, email));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress("masonhwolf@gmail.com"));
+        msg.setSubject("User Message");
+        
+        msg.setContent(contactForm, "text/html");
+        
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        // Create a transport.
+        Transport transport = session.getTransport();
+                    
+        // Send the message.
+        try
+        {
+            // Connect to Amazon SES using the SMTP username and password you specified above.
+            transport.connect(HOST, SMTP_USERNAME, SMTP_PASSWORD);
+        	
+            // Send the email.
+            transport.sendMessage(msg, msg.getAllRecipients());
+        }
+        catch (Exception ex) {
+            System.out.println("The email was not sent.");
+            System.out.println("Error message: " + ex.getMessage());
+        }
+        finally
+        {
+            transport.close();
         }
 	}
 }

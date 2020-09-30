@@ -17,11 +17,11 @@
                 </div>
                 <div class="col-4" style="padding: 0px; text-align: center;">
                     <div class="col-12 widget shadow">
-                        <h2>Total Spent</h2>
+                        <h2>Spent</h2>
 
                         <div class="money" style="margin-top: 25px;"><p th:text="${totalSpent}"></p></div>
                         <div class="col-12" style="text-align: right; padding: 0px; text-align: center; font-size: 18px; margin-top: 15px;">
-                            <a href="/AccountActivity">View Account Activity</a>
+                            <a href="/AccountActivity">View Activity</a>
                         </div>
                     </div>
                 </div>
@@ -76,8 +76,8 @@
                 <div class="col-12" style="margin-top: 30px;" th:if="${budgetStatus}">
                     <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '">
                     </h2>                  
-                    <a href="#" id="showProgress" style="float:right;margin-top:-57px;margin-right:40px;"><img src="/images/progress.png"></a>
-                    <a href="#" id="showTable" style="float:right;margin-top:-57px;"><img src="/images/table.png"></a>
+                    <a href="#" id="showProgress" style="float:right;"><img src="https://raw.githubusercontent.com/mason-wolf/budget-app/master/src/main/resources/static/images/progress.PNG"></a>
+                    <a href="#" id="showTable" style="float:right;"><img src="https://raw.githubusercontent.com/mason-wolf/budget-app/master/src/main/resources/static/images/table.PNG"></a>
                     
                     <div id="progressContainer">
                     <div th:each="item : ${budgetStatus}">
@@ -191,6 +191,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div th:include="footer :: footer">
         </div>
     </body>
 </html>

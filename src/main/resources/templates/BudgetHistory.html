@@ -4,7 +4,6 @@
     <title>Budget History</title>
   </head>
   <body>
-  
 <div class="col-12" style="padding:0px">
     <div class="col-7 center shadow"  style="padding:0px;">
         <div class="col-12" style="padding:1em;">
@@ -32,22 +31,22 @@
 	            </tr>
 	            <tr>
 	            	<th>Income</th>
-	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${amountEarned}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="${#numbers.formatCurrency(amountEarned)}" class="money-small" style="font-weight:400;"></p></td>
 	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	            <tr>
 	            	<th>Budget</th>
-	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${totalBudget}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$' + ${totalBudget}" class="money-small" style="font-weight:400;"></p></td>
 	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	            <tr>
 	            	<th>Spent</th>
-	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${totalSpent}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$' + ${totalSpent}" class="money-small" style="font-weight:400;"></p></td>
 	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	            <tr>
 	            	<th>Balance</th>
-	            	<td style="border-right-color:#fff;"><p th:text="'$ ' + ${remaining}" class="money-small" style="font-weight:400;"></p></td>
+	            	<td style="border-right-color:#fff;"><p th:text="'$' + ${remaining}" class="money-small" style="font-weight:400;"></p></td>
 	            	<td style="border-left-color:#fff;"></td>
 	            </tr>
 	        </table>
@@ -66,7 +65,7 @@
                         		  {
                       		  		document.getElementById(budgetList[i].budgetId).style.color='red';
                         		  }
-                        	  if (budgetList[i].budgetSpent == budgetList[i].budgetAmount)
+                        	  if (budgetList[i].budgetSpent == budgetList[i].budgetAmount && budgetList[i].budgetSpent != 0)
                     		  {
                   		  		document.getElementById(budgetList[i].budgetId).style.color='#db8d25';
                     		  }

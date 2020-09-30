@@ -30,6 +30,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/resources/**").permitAll() 
             .antMatchers("/CreateAccount").permitAll()
             .antMatchers("/ForgotPassword").permitAll()   
+            .antMatchers("/Contact").permitAll()
+            .antMatchers("/ContactForm").permitAll()
             .antMatchers("/ResetPassword/{userToken}").permitAll()      
             .anyRequest().hasAnyRole("USER")
             .and()

@@ -354,7 +354,8 @@ public class DashboardController {
 		model.addAttribute("remaining", dFormat.format(remaining));
 		model.addAttribute("budgetMonth", budgetMonth);
 		model.addAttribute("budgetYear", budgetYear);
-		model.addAttribute("budgetArchive", budgetArchive);
+		model.addAttribute("budgetArchive", budgetArchive);		
+		model.addAttribute("loggedIn", currentUser());
 		
 		return "BudgetHistory";
 	}
@@ -438,4 +439,29 @@ public class DashboardController {
     	String username = ((UserDetails)principal).getUsername();
     	return username;
     }
+    
+	@GetMapping({"/Contact"})
+	public String contactPage(Model model)
+	{
+		model.addAttribute("formNotSent", "formNotSent");
+		return "Contact";
+	}
+	
+	@RequestMapping(value = "/ContactForm", method = RequestMethod.POST)
+	public String submitContactForm(Model model, @RequestParam("contactForm") String contactForm, @RequestParam("email") String email) throws Exception
+	{
+		if (!IndexController.validEmail(email))
+		{
+			model.addAttribute("invalidEmail", "Please enter a valid email.");
+			model.addAttribute("formNotSent", "formNotSent");
+			return "Contact";
+		}
+		else
+		{
+			MailSender mailSender = new MailSender();
+			mailSender.SendContactForm(email, contactForm);
+			model.addAttribute("formSent", "formSent");
+			return "Contact";
+		}
+	}
 }

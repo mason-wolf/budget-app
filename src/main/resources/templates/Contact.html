@@ -1,0 +1,27 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en" th:include="header :: header"> 
+</head>
+    <title>Contact</title>
+  </head>
+  <body>
+
+<div class="col-12">
+  <div class="col-6 center" th:if="${formNotSent}">
+    <form method="post" th:action="@{/ContactForm}">
+    <a href="\Dashboard">Go Back</a>  
+    <div class="col-12" style="text-align:center;">
+    	<h2>Contact Us</h2><p>Let us know what you think! Comments, improvements, suggestions welcome.</div>
+    	<div th:if="${invalidEmail}" style="color:red;"><div class="col-12">Please enter a valid email.</div></div>
+    	<div class="col-12" style="padding-bottom:0;">Email:</div>
+    	<div class="col-12"><input type="text"  class="field" name="email" required ></div>
+    	<div class="col-12"><textarea class="col-12" style="height:200px;" name="contactForm" required></textarea></div>
+    	<div class="col-4" style="float:right;"><input type="submit" class="button" value="Send"></div>
+  	</form>
+  </div>
+    <div class="col-6 center" th:if="${formSent}">
+    <div class="col-12" style="text-align:center;">
+    	<h2>Thanks!</h2><p>We're glad to hear from you.<br><br>
+    	<a href="\Dashboard">Go Back</a>  
+    </div>
+  </div>
+</div>
