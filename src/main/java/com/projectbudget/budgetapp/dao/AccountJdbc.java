@@ -192,7 +192,7 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public List<BudgetItem> getTotalBudgeted(String username) {
 		
-		String query = "select id, owner, category, archived, startDate, endDate, sum(amount) as amount from budgets where owner = ? and archived = '0' group by category";
+		String query = "select id, owner, category, archived, startDate, endDate, sum(amount) as amount from budgets where owner = ? and archived = '0' group by category order by amount desc";
 		List<BudgetItem> budgetItemTotals = jdbcTemplateObject.query(query, new Object[] { username }, new  BudgetItemMapper());
 		return budgetItemTotals;
 		
@@ -243,17 +243,17 @@ public class AccountJdbc implements AccountDao{
 
 		// Query for all items that were budgeted and amount spent per category.
 		String archiveQuery = "select budgets.id as id, budgets.category,"
-				+ "IF(transactions.owner=?, transactions.amount, 0) as budgetSpent, \n" + 
+				+ "				sum(case when transactions.owner = ? and MONTH(transactions.date) = ? and YEAR(transactions.date) = ? THEN transactions.amount else 0 END) as budgetSpent, \n" + 
 				"								budgets.amount as budgetAmount\n" + 
 				"								from budgets\n" + 
 				"								left join \n" + 
 				"								transactions on budgets.category = transactions.category \n" + 
 				"				                where budgets.owner = ? and MONTH(budgets.startDate) = ? and YEAR(budgets.startDate) = ?\n" + 
 				"								group by budgets.category\n" + 
-				"								order by budgetSpent;";
+				"								order by budgetSpent desc;";
 		
 		
-		List<BudgetStatus> budgetArchive = jdbcTemplateObject.query(archiveQuery, new Object[] { username, username, month, year}, new BudgetStatusMapper());
+		List<BudgetStatus> budgetArchive = jdbcTemplateObject.query(archiveQuery, new Object[] { username, month, year, username, month, year}, new BudgetStatusMapper());
 		
 		for (BudgetStatus b : budgetArchive)
 		{
@@ -334,6 +334,7 @@ public class AccountJdbc implements AccountDao{
 		{
 			budgetItem.setStartDate(currentDate.toString());
 			String rolloverQuery = "insert into budgets (owner, category, archived, startDate, endDate, amount) values (?, ?, ?, ?, ?, ?)";
+
 			jdbcTemplateObject.update(rolloverQuery, budgetItem.getOwner(), 
 					budgetItem.getCategory(), 0, budgetItem.getStartDate(), 
 					budgetItem.getEndDate(), budgetItem.getAmount());

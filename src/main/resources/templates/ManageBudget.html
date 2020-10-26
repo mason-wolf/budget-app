@@ -48,9 +48,14 @@
 							   <td><span th:text="${#numbers.formatCurrency(item.amount)}" class="money-small"></span><a th:href="@{'/RemoveExpense/' + ${item.budgetId}}" style="float:right;">remove</a></td>
 							</tr>
 
-						<tr>
-						<td style='border-top:0px;'><b>Remaining Balance</b></td>
-		            	<td style='border-top:0px;'><p th:text="${accountBalance}" class="money-small" style="font-weight:400;"></td>
+		            	<tr>
+						<td style='border-top:0px;'><b>Total Income</b></td>
+		            	<td style='border-top:0px;'><p th:text="${totalIncome}" class="money-small" style="font-weight:400;"></td>
+		            	</tr>
+		            	
+		            	<tr>
+		                <td style='border-top:0px;'><b>Total Budget</b></td>
+		            	<td style='border-top:0px;'><p th:text="${totalBudget}" class="money-small" style="font-weight:400;"></td>
 		            	</tr>
 		            	
 		            	<tr>
@@ -59,9 +64,11 @@
 		            	</tr>
 		            	
 		            	<tr>
-		                <td style='border-top:0px;'><b>Total Budget</b></td>
-		            	<td style='border-top:0px;'><p th:text="${totalBudget}" class="money-small" style="font-weight:400;"></td>
+						<td style='border-top:0px;'><b>Remaining Balance</b></td>
+		            	<td style='border-top:0px;'><p th:text="${accountBalance}" class="money-small" style="font-weight:400;"></td>
 		            	</tr>
+		            	
+		            	
 		                </table>
 				</div>
 

@@ -46,6 +46,7 @@ public class BudgetManagerController {
 		// Get total budget for each category.
 		List<BudgetItem> budgetTotals = AccountJdbc.query.getTotalBudgeted(currentUser());
 		
+		double totalIncome = AccountJdbc.query.getAmountEarned(currentUser(), DashboardController.selectedBudgetMonth, DashboardController.selectedBudgetYear);
 		double totalBudget = 0;
 		double projectedSavings = 0;
 		Account account = AccountJdbc.query.getAccount(currentUser());
@@ -67,13 +68,14 @@ public class BudgetManagerController {
 			model.addAttribute("budgetItems", budgetItems);
 		}
 		
-		projectedSavings = account.getBalance() - totalBudget;
+		projectedSavings = totalIncome - totalBudget;
 
 		model.addAttribute("budgetTimeframe", budgetTimeframe);
 		model.addAttribute("accountBalance", "$" + dFormat.format(account.getBalance()));
 		model.addAttribute("categories", budgetCategories);
 		model.addAttribute("budgetTotals", budgetTotals);
 		model.addAttribute("projectedSavings", "$" + dFormat.format(projectedSavings));
+		model.addAttribute("totalIncome", "$" + dFormat.format(totalIncome));
 		model.addAttribute("totalBudget", "$" + dFormat.format(totalBudget));
 		model.addAttribute("loggedIn", account.getAccountOwner());
 	}
