@@ -46,7 +46,29 @@ public class BudgetManagerController {
 		// Get total budget for each category.
 		List<BudgetItem> budgetTotals = AccountJdbc.query.getTotalBudgeted(currentUser());
 		
-		double totalIncome = AccountJdbc.query.getAmountEarned(currentUser(), DashboardController.selectedBudgetMonth, DashboardController.selectedBudgetYear);
+		int selectedMonth = DashboardController.selectedBudgetMonth;
+		int selectedYear = DashboardController.selectedBudgetYear;
+		
+		double totalIncome = AccountJdbc.query.getAmountEarned(currentUser(), selectedMonth, selectedYear);
+		
+		// Get the remaining balance from last month to include in this month's income.
+		// If it's January, get December's balance.
+		if (selectedMonth == 1)
+		{
+			selectedMonth = 12;
+			selectedYear -= 1;
+		}
+		else
+		{
+			selectedMonth -= 1;
+		}
+		
+		double totalIncomeLastMonth = AccountJdbc.query.getAmountEarned(currentUser(), selectedMonth, selectedYear);
+		double totalSpentLastMonth = AccountJdbc.query.getTotalSpent(currentUser(), selectedMonth, selectedYear);
+		double lastMonthRemainingBalance = totalIncomeLastMonth - totalSpentLastMonth;
+		
+		totalIncome += lastMonthRemainingBalance;
+		
 		double totalBudget = 0;
 		double projectedSavings = 0;
 		Account account = AccountJdbc.query.getAccount(currentUser());

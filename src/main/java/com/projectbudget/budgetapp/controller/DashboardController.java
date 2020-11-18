@@ -243,7 +243,31 @@ public class DashboardController {
 		
 		DecimalFormat dFormat = new DecimalFormat("###,##0.00");
 		
-		double remainingFunds = account.getBalance() + totalSpent - totalSpent;
+		double income = AccountJdbc.query.getAmountEarned(currentUser(), selectedBudgetMonth, selectedBudgetYear);
+		
+		// Get the remaining balance from last month to include in this month's income.
+		// If it's January, get December's balance.
+		
+		int selectedMonth = selectedBudgetMonth;
+		int selectedYear = selectedBudgetYear;
+		
+		if (selectedMonth == 1)
+		{
+			selectedMonth = 12;
+			selectedYear -= 1;
+		}
+		else
+		{
+			selectedMonth -= 1;
+		}
+		
+		double totalIncomeLastMonth = AccountJdbc.query.getAmountEarned(currentUser(), selectedMonth, selectedYear);
+		double totalSpentLastMonth = AccountJdbc.query.getTotalSpent(currentUser(), selectedMonth, selectedYear);
+		double lastMonthRemainingBalance = totalIncomeLastMonth - totalSpentLastMonth;
+		
+		income += lastMonthRemainingBalance;
+		
+		double remainingFunds = account.getBalance();
 		
 		// Budget alloted and spent: compares budget items with transactions
 		List<BudgetStatus> budgetStatusItems = AccountJdbc.query.getBudgetStatus(currentUser());
@@ -253,7 +277,7 @@ public class DashboardController {
 
 		List<Transaction> transactionHistory = AccountJdbc.query.getTransactionHistory(currentUser());
 		
- 		model.addAttribute("income", "$" + dFormat.format(account.getBalance() + totalSpent));
+ 		model.addAttribute("income", "$" + dFormat.format(income));
  		model.addAttribute("totalSpent", "$" + dFormat.format(totalSpent));
  		model.addAttribute("remainingFunds", "$" + dFormat.format(remainingFunds));
 

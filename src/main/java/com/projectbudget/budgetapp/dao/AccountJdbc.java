@@ -255,11 +255,6 @@ public class AccountJdbc implements AccountDao{
 		
 		List<BudgetStatus> budgetArchive = jdbcTemplateObject.query(archiveQuery, new Object[] { username, month, year, username, month, year}, new BudgetStatusMapper());
 		
-		for (BudgetStatus b : budgetArchive)
-		{
-			System.out.println(b.getBudgetAmount());
-			System.out.println(b.getBudgetSpent());
-		}
 		// Query for items that were spent in the time frame but were not in the budget.
 		String nonBudgetItemsQuery = "SELECT id, category, sum(case when archived = 1 and owner=? then amount else 0 END) as budgetSpent, 0 as budgetAmount\n" + 
 				"FROM transactions WHERE category NOT IN (SELECT category FROM budgets where month(budgets.startDate) = ? and year(budgets.startDate) = ? and owner = ?) \n" + 
@@ -374,10 +369,43 @@ public class AccountJdbc implements AccountDao{
 		return archivedBudgetList;
 	}
 
+	/*
+	 * Retrieves total earned by month and date.
+	 */
 	@Override
 	public Double getAmountEarned(String username, int month, int year) {
 		String query = "select sum(amount) from transactions where owner= ? and month(date) = ? and year(date) = ? and category='Income'";
-		double amountEarned =  jdbcTemplateObject.queryForObject(query, new Object[] { username, month, year }, Double.class);
+		
+		double amountEarned = 0;
+		
+		try
+		{
+			amountEarned =  jdbcTemplateObject.queryForObject(query, new Object[] { username, month, year }, Double.class);
+		}
+		catch(Exception e)
+		{
+			amountEarned =0 ;
+		}
 		return amountEarned;
+	}
+
+	/*
+	 * Retrieves total spent by month and date.
+	 */
+	@Override
+	public Double getTotalSpent(String username, int month, int year) {
+		String query = "select sum(amount) from transactions where owner=? and month(date) = ? and year(date) = ? and category != 'Income'";
+		
+		double amountSpent = 0;
+		
+		try
+		{
+			amountSpent = jdbcTemplateObject.queryForObject(query, new Object[] { username, month, year }, Double.class);
+		}
+		catch(Exception e)
+		{
+			amountSpent = 0;
+		}
+		return amountSpent;
 	}
 }

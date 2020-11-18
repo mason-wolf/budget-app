@@ -26,6 +26,7 @@ public interface AccountDao {
 	public void deleteTransasction(int transactionId);
 	public List<Transaction> getTransactionHistory(String username);
 	public List<Transaction> getTransactionsByCategory(String username);
+	public Double getTotalSpent(String username, int month, int year);
 	public List<Transaction> getTotalSpentByCategory(String username, int month, int year);
 	public List<Category> getBudgetCategories(String username);
 	public List<BudgetStatus> getBudgetStatus(String username);
