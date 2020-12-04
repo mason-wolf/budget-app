@@ -63,11 +63,11 @@ public class BudgetManagerController {
 			selectedMonth -= 1;
 		}
 		
-		double totalIncomeLastMonth = AccountJdbc.query.getAmountEarned(currentUser(), selectedMonth, selectedYear);
-		double totalSpentLastMonth = AccountJdbc.query.getTotalSpent(currentUser(), selectedMonth, selectedYear);
-		double lastMonthRemainingBalance = totalIncomeLastMonth - totalSpentLastMonth;
-		
-		totalIncome += lastMonthRemainingBalance;
+//		double totalIncomeLastMonth = AccountJdbc.query.getAmountEarned(currentUser(), selectedMonth, selectedYear);
+//		double totalSpentLastMonth = AccountJdbc.query.getTotalSpent(currentUser(), selectedMonth, selectedYear);
+//		double lastMonthRemainingBalance = totalIncomeLastMonth - totalSpentLastMonth;
+//		
+//		totalIncome += lastMonthRemainingBalance;
 		
 		double totalBudget = 0;
 		double projectedSavings = 0;

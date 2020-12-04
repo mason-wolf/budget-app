@@ -73,9 +73,11 @@
                     <div class="col-12" style="border: 1px solid #ddd; text-align: center; margin-top: 10px;">No projected expenses.<br><a href="/ManageBudget">Manage Budget</a></div>
                 </div>
 
+                    
                 <div class="col-12" style="margin-top: 30px;" th:if="${budgetStatus}">
                     <h2 style="margin-bottom: 15px;" th:text="${budgetTimeFrame} + ' Budget '">
-                    </h2>                  
+                    </h2>          
+                    <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" style="width:125px;margin-top:-50px;float:right;"/>        
                     <a href="#" id="showProgress" style="float:right;"><img src="https://raw.githubusercontent.com/mason-wolf/budget-app/master/src/main/resources/static/images/progress.PNG"></a>
                     <a href="#" id="showTable" style="float:right;"><img src="https://raw.githubusercontent.com/mason-wolf/budget-app/master/src/main/resources/static/images/table.PNG"></a>
                     
@@ -171,9 +173,6 @@
                         	}
                     </script>
 				    </div>
-                    <div class="col-3" style="float: right; margin-top: 35px;">
-                        <input type="button" onclick="location.href='AddExpense'" value="Add Expense" class="button" style="width:125px;float:right;"/>
-                    </div>
   
                     <div class="col-12"th:if="${budgetArchive}">
                         <h2>Budget History</h2>
