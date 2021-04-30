@@ -340,16 +340,18 @@ public class AccountJdbc implements AccountDao{
 	@Override
 	public Double getTotalNotBudgeted(String username, int month, int year) {
 		
-		String budgetQuery = "select sum(transactions.amount) from transactions \n" + 
-				"				left join budgets on transactions.category = budgets.category   \n" + 
-				"				where transactions.category != \"Income\" and transactions.owner=? \n" + 
-				"                and month(transactions.date) = ? and year(transactions.date) = ?\n" + 
-				"                and transactions.category NOT IN (select category from budgets where archived = 0 and owner=?)";
+		String budgetQuery = "SELECT SUM(DISTINCT transactions.amount) FROM transactions "
+				+ "JOIN budgets on transactions.category = budgets.category "
+				+ "WHERE transactions.owner=? and transactions.category != 'Income' "
+				+ "AND budgets.owner=? "
+				+ "AND MONTH(transactions.date) = ? and YEAR(transactions.date) = ? "
+				+ "AND transactions.category NOT IN (SELECT category FROM budgets WHERE archived = 0 and owner=?)";
+
 		double result = 0 ;
 		
 		try 
 		{
-		result = jdbcTemplateObject.queryForObject(budgetQuery, new Object[] { username, month, year, username }, Double.class);
+		result = jdbcTemplateObject.queryForObject(budgetQuery, new Object[] { username, username, month, year, username }, Double.class);
 		}
 		catch(Exception e)
 		{
@@ -364,7 +366,7 @@ public class AccountJdbc implements AccountDao{
 	 */
 	@Override
 	public List<BudgetItem> getAllBudgetArchives(String username) {
-		String budgetQuery = "select * from budgets where archived=1 and owner = ?";
+		String budgetQuery = "select * from budgets where archived=1 and owner = ? order by startDate desc";
 		List<BudgetItem> archivedBudgetList = jdbcTemplateObject.query(budgetQuery, new Object[] { username }, new  BudgetItemMapper());
 		return archivedBudgetList;
 	}
